@@ -129,7 +129,7 @@ const sectionMotion = {
     y: 0,
     transition: {
       duration: 0.7,
-      ease: [0.2, 0.68, 0.1, 1],
+      ease: [0.2, 0.68, 0.1, 1] as const,
     },
   },
 };
@@ -152,7 +152,7 @@ const cardMotion = {
     y: 0,
     transition: {
       duration: 0.45,
-      ease: [0.2, 0.68, 0.1, 1],
+      ease: [0.2, 0.68, 0.1, 1] as const,
     },
   },
 };
@@ -171,7 +171,7 @@ export default function Home() {
         transition={{ duration: 11, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
       />
 
-      <main className="mx-auto w-full max-w-6xl px-6 pb-16 pt-12 md:px-10 md:pt-16">
+      <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 pb-16 pt-8 md:px-10 md:pt-16">
         <motion.section
           variants={sectionMotion}
           initial="hidden"
@@ -187,7 +187,7 @@ export default function Home() {
           <motion.div
             whileHover={{ y: -3 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="group rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-8 shadow-[var(--soft-shadow)] md:p-12 hover:border-[var(--line-strong)] transition-colors duration-500"
+            className="group rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8 shadow-[var(--soft-shadow)] md:p-12 hover:border-[var(--line-strong)] transition-colors duration-500"
           >
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-1.5 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
@@ -199,20 +199,20 @@ export default function Home() {
               </p>
             </div>
             
-            <h1 className="mt-6 max-w-3xl font-heading text-4xl leading-tight md:text-6xl font-medium tracking-tight">
+            <h1 className="mt-6 font-heading text-3xl leading-tight md:text-5xl lg:text-6xl font-medium tracking-tight">
               Building thoughtful products at the intersection of{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent)] to-purple-400">
                 software, data, and machine intelligence.
               </span>
             </h1>
-            <p className="mt-6 max-w-3xl text-sm leading-8 text-[var(--text-secondary)] md:text-lg">
+            <p className="mt-6 max-w-2xl text-sm leading-7 text-[var(--text-secondary)] md:text-lg">
               Computer Science student focused on practical AI applications,
               strong software fundamentals, and clean user experiences. I enjoy
               turning ideas into functional products that solve real problems.
             </p>
 
             <motion.div
-              className="mt-10 flex flex-wrap gap-4"
+              className="mt-10 flex flex-col sm:flex-row flex-wrap gap-4"
               variants={listMotion}
               initial="hidden"
               whileInView="show"
@@ -225,7 +225,7 @@ export default function Home() {
                 href="https://www.linkedin.com/in/rumita-mandal-63a1a7293"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 rounded-full bg-[var(--text-primary)] px-6 py-3 text-sm font-semibold text-[var(--bg)] transition-colors duration-300 hover:bg-white/90"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[var(--text-primary)] px-6 py-3 text-sm font-semibold text-[var(--bg)] transition-colors duration-300 hover:bg-white/90"
               >
                 <Linkedin className="h-4 w-4" />
                 LinkedIn
@@ -237,7 +237,7 @@ export default function Home() {
                 href="https://github.com/rumita-mandal"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--surface-2)] px-6 py-3 text-sm font-semibold transition-colors duration-300 hover:bg-[var(--line)]"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--surface-2)] px-6 py-3 text-sm font-semibold transition-colors duration-300 hover:bg-[var(--line)]"
               >
                 <Github className="h-4 w-4" />
                 GitHub
@@ -248,7 +248,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 href="/cv%20of%20Rumita.doc"
                 download
-                className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-6 py-3 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-300 hover:text-[var(--text-primary)] hover:border-[var(--line-strong)]"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-6 py-3 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-300 hover:text-[var(--text-primary)] hover:border-[var(--line-strong)]"
               >
                 <Download className="h-4 w-4" />
                 Resume
@@ -319,12 +319,12 @@ export default function Home() {
               <motion.article
                 key={project.name}
                 variants={cardMotion}
-                className="group relative flex flex-col justify-between rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
+                className="group relative flex flex-col justify-between rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
               >
                 <div>
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <h3 className="font-heading text-2xl font-medium">{project.name}</h3>
-                    <span className="rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-3 py-1 text-xs text-[var(--text-muted)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <h3 className="font-heading text-xl sm:text-2xl font-medium">{project.name}</h3>
+                    <span className="w-fit rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-3 py-1 text-xs text-[var(--text-muted)]">
                       {project.date}
                     </span>
                   </div>
@@ -370,13 +370,13 @@ export default function Home() {
         >
           <div className="flex flex-col gap-6">
             <motion.article
-              className="rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
+              className="rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-2)] border border-[var(--line)]">
                   <Award className="h-5 w-5 text-[var(--text-primary)]" />
                 </div>
-                <h2 className="font-heading text-2xl font-medium">Certificates</h2>
+                <h2 className="font-heading text-xl sm:text-2xl font-medium">Certificates</h2>
               </div>
               <motion.ul
                 className="space-y-3"
@@ -389,9 +389,9 @@ export default function Home() {
                   <motion.li
                     key={certificate}
                     variants={cardMotion}
-                    className="group flex gap-3 rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-5 py-4 transition-colors hover:border-[var(--line-strong)]"
+                    className="group flex gap-3 rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-4 sm:px-5 py-4 transition-colors hover:border-[var(--line-strong)]"
                   >
-                    <div className="mt-0.5 h-1.5 w-1.5 flex-none rounded-full bg-[var(--accent)]" />
+                    <div className="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-[var(--accent)]" />
                     <span className="text-sm tracking-tight text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">
                       {certificate}
                     </span>
@@ -404,17 +404,17 @@ export default function Home() {
           <motion.div className="flex flex-col gap-6" variants={listMotion}>
             <motion.article
               variants={cardMotion}
-              className="rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
+              className="rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-2)] border border-[var(--line)]">
                   <Sparkles className="h-5 w-5 text-[var(--text-primary)]" />
                 </div>
-                <h2 className="font-heading text-2xl font-medium">Achievements</h2>
+                <h2 className="font-heading text-xl sm:text-2xl font-medium">Achievements</h2>
               </div>
               <ul className="grid sm:grid-cols-2 gap-4">
                 {achievements.map((item) => (
-                  <li key={item.title} className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] p-5">
+                  <li key={item.title} className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] p-4 sm:p-5">
                     <p className="text-sm font-semibold">{item.title}</p>
                     <p className="mt-1 text-xs text-[var(--text-muted)]">{item.date}</p>
                     <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
@@ -427,15 +427,15 @@ export default function Home() {
 
             <motion.article
               variants={cardMotion}
-              className="rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
+              className="rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8 transition-colors duration-500 hover:border-[var(--line-strong)]"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-2)] border border-[var(--line)]">
                   <GraduationCap className="h-5 w-5 text-[var(--text-primary)]" />
                 </div>
-                <h2 className="font-heading text-2xl font-medium">Education</h2>
+                <h2 className="font-heading text-xl sm:text-2xl font-medium">Education</h2>
               </div>
-              <ul className="space-y-4">
+              <ul className="space-y-6 sm:space-y-4">
                 {education.map((item) => (
                   <li key={item.school + item.date} className="relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-[var(--line)] last:before:hidden">
                     <span className="absolute left-[-4px] top-2 h-2 w-2 rounded-full border-2 border-[var(--bg)] bg-[var(--accent)]" />
