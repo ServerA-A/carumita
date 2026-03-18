@@ -145,13 +145,13 @@ export default function Home() {
         <section id="about" className="relative flex flex-col items-start min-h-[60vh] justify-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, bounce: 0.4, type: "spring" }}
-            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-10 border backdrop-blur-md shadow-sm ${isDark ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-200'}`}
+            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-10 border backdrop-blur-md shadow-sm ${isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'}`}
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className={`text-[11px] font-bold tracking-[0.2em] uppercase ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>Available for work</span>
+            <span className={`text-[11px] font-bold tracking-[0.2em] uppercase ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>Available for work</span>
           </motion.div>
 
           <motion.h1 
