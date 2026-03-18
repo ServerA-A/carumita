@@ -503,7 +503,7 @@ export default function Home() {
               I&apos;m currently looking for new opportunities. Whether you have a question, a project idea, or just want to say hi, I&apos;ll try my best to get back to you!
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
-              <a href="mailto:rumita.mandal@example.com" className={`group flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 ${isDark ? 'bg-indigo-500 text-white shadow-[0_0_40px_rgba(99,102,241,0.4)]' : 'bg-indigo-600 text-white shadow-xl hover:shadow-indigo-500/30'}`}>
+              <a href="mailto:rumita.mandal@example.com" className={`group flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 ${isDark ? 'bg-indigo-500 text-white shadow-[0_0_40px_rgba(99,102,241,0.4)] hover:shadow-[0_0_60px_rgba(99,102,241,0.6)]' : 'bg-indigo-600 text-white shadow-xl hover:shadow-indigo-500/40'}`}>
                 Say Hello <Send className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </a>
               <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" target="_blank" className={`group flex items-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 border ${isDark ? 'border-white/20 text-white bg-white/5 hover:bg-white/10' : 'border-black/10 text-black bg-black/5 hover:bg-black/10'}`}>
