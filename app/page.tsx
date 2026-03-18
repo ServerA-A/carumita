@@ -16,7 +16,9 @@ import {
   Sparkles,
   Mail,
   Moon,
-  Sun
+  Sun,
+  Send,
+  ArrowRight
 } from "lucide-react";
 
 // --- DATA ---
@@ -120,6 +122,7 @@ export default function Home() {
           <a href="#about" className={`${textMuted} hover:${textMain} hover:scale-105 transition-all`}>About</a>
           <a href="#projects" className={`${textMuted} hover:${textMain} hover:scale-105 transition-all`}>Projects</a>
           <a href="#skills" className={`${textMuted} hover:${textMain} hover:scale-105 transition-all`}>Skills</a>
+          <a href="#contact" className={`${textMuted} hover:${textMain} hover:scale-105 transition-all`}>Contact</a>
         </div>
 
         <button 
@@ -170,7 +173,7 @@ export default function Home() {
 
           <motion.div 
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-wrap items-center gap-5"
+            className="flex flex-wrap items-center gap-5 mb-16"
           >
             <a href="https://github.com/rumita-mandal" target="_blank" className={`group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:shadow-[0_10px_40px_-10px_rgba(255,255,255,0.4)]' : 'bg-black text-white hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.4)]'}`}>
               <Github className="w-5 h-5 transition-transform group-hover:rotate-12" /> Explore Work
@@ -181,6 +184,20 @@ export default function Home() {
             <a href="/cv%20of%20Rumita.doc" download className={`flex items-center gap-3 p-4 rounded-full border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${isDark ? 'border-white/20 hover:bg-white/10 hover:border-white/40 text-current' : 'border-black/20 hover:bg-black/5 hover:border-black/40 text-current'}`}>
               <Download className="w-5 h-5" />
             </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 1 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2"
+          >
+            <span className={`text-xs font-bold uppercase tracking-widest ${textMuted}`}>Scroll</span>
+            <motion.div 
+              animate={{ y: [0, 8, 0] }} 
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className={`w-[1px] h-12 ${isDark ? 'bg-gradient-to-b from-white/40 to-transparent' : 'bg-gradient-to-b from-black/40 to-transparent'}`}
+            />
           </motion.div>
         </section>
 
@@ -414,6 +431,39 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+        </section>
+
+        {/* CONTACT SECTION */}
+        <section id="contact" className="scroll-mt-40 mb-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className={`relative overflow-hidden rounded-[3rem] p-10 sm:p-16 md:p-24 text-center ${isDark ? 'bg-indigo-900/10 border border-indigo-500/20' : 'bg-indigo-50 border border-indigo-100'} shadow-2xl`}
+          >
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="inline-flex items-center justify-center p-4 rounded-full mb-8 bg-indigo-500/10 text-indigo-500"
+            >
+              <Mail className="w-8 h-8" />
+            </motion.div>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 tracking-tight">Let&apos;s Build Something <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">Amazing</span></h2>
+            <p className={`text-lg sm:text-xl ${textMuted} mb-12 max-w-2xl mx-auto font-medium`}>
+              I&apos;m currently looking for new opportunities. Whether you have a question, a project idea, or just want to say hi, I&apos;ll try my best to get back to you!
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
+              <a href="mailto:rumita.mandal@example.com" className={`group flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 ${isDark ? 'bg-indigo-500 text-white shadow-[0_0_40px_rgba(99,102,241,0.4)]' : 'bg-indigo-600 text-white shadow-xl hover:shadow-indigo-500/30'}`}>
+                Say Hello <Send className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </a>
+              <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" target="_blank" className={`group flex items-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 border ${isDark ? 'border-white/20 text-white bg-white/5 hover:bg-white/10' : 'border-black/10 text-black bg-black/5 hover:bg-black/10'}`}>
+                Connect <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          </motion.div>
         </section>
 
       </main>
