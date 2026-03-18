@@ -18,7 +18,10 @@ import {
   Moon,
   Sun,
   Send,
-  ArrowRight
+  ArrowRight,
+  MapPin,
+  Calendar,
+  Briefcase
 } from "lucide-react";
 
 // --- DATA ---
@@ -81,6 +84,11 @@ const milestones = [
   { type: "cert", title: "ChatGPT-4 Prompt Engineering", subtitle: "Infosys", date: "Aug 2025", icon: <Award className="w-5 h-5"/> },
   { type: "cert", title: "C++ Programming & DSA", subtitle: "CSE Pathsala", date: "Jul 2025", icon: <Award className="w-5 h-5"/> },
   { type: "edu", title: "City Montessori School", subtitle: "Intermediate (89%)", date: "2021 - 2023", icon: <GraduationCap className="w-5 h-5"/> },
+];
+
+const technologies = [
+  "React", "Next.js", "TypeScript", "Python", "Node.js", "Tailwind CSS",
+  "OpenCV", "TensorFlow", "Pandas", "Scikit", "MongoDB", "MySQL", "C++"
 ];
 
 export default function Home() {
@@ -199,6 +207,45 @@ export default function Home() {
               className={`w-[1px] h-12 ${isDark ? 'bg-gradient-to-b from-white/40 to-transparent' : 'bg-gradient-to-b from-black/40 to-transparent'}`}
             />
           </motion.div>
+        </section>
+
+        {/* MARQUEE SECTION */}
+        <div className="w-[100vw] relative left-1/2 -translate-x-1/2 -mt-20 mb-10 sm:-mt-10 sm:mb-20 overflow-hidden flex py-6 border-y border-current opacity-80 backdrop-blur-sm" style={{ borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', backgroundColor: isDark ? 'rgba(255,255,255,0.01)' : 'rgba(0,0,0,0.01)' }}>
+          <div className="flex w-max animate-marquee gap-8 sm:gap-16 items-center">
+            {[...technologies, ...technologies, ...technologies, ...technologies].map((tech, i) => (
+              <span key={i} className={`whitespace-nowrap text-xl sm:text-2xl font-black uppercase tracking-widest ${isDark ? 'text-white/20 hover:text-white/80' : 'text-black/20 hover:text-black/80'} transition-colors cursor-default`}>
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* QUICK FACTS BENTO */}
+        <section className="scroll-mt-40 -mt-16 sm:mt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { icon: <MapPin className="w-6 h-6 text-blue-500" />, label: "Location", value: "India" },
+              { icon: <Briefcase className="w-6 h-6 text-purple-500" />, label: "Experience", value: "3+ Projects" },
+              { icon: <Calendar className="w-6 h-6 text-emerald-500" />, label: "Graduating", value: "2027" },
+            ].map((fact, i) => (
+              <motion.div
+                key={fact.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`flex items-center gap-4 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} shadow-sm backdrop-blur-md`}
+              >
+                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'}`}>
+                  {fact.icon}
+                </div>
+                <div>
+                  <p className={`text-sm font-bold uppercase tracking-widest ${textMuted} mb-1`}>{fact.label}</p>
+                  <p className="text-xl font-black">{fact.value}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </section>
 
         {/* PROJECTS */}
