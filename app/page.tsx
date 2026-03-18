@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Github,
   Linkedin,
@@ -8,579 +9,352 @@ import {
   Terminal,
   Code2,
   Database,
-  Cpu,
   BrainCircuit,
   ExternalLink,
   Award,
   GraduationCap,
   Sparkles,
+  Mail,
+  Moon,
+  Sun
 } from "lucide-react";
 
+// --- DATA ---
 const skillGroups = [
   {
     title: "Languages",
-    icon: <Code2 className="h-5 w-5 text-[var(--accent)]" />,
+    icon: <Code2 className="w-6 h-6 text-indigo-500" />,
     items: ["C++", "JavaScript", "C", "Java", "Python"],
+    grad: "from-indigo-500/20 to-blue-500/20",
+    border: "group-hover:border-indigo-500/50"
   },
   {
-    title: "Frameworks",
-    icon: <Terminal className="h-5 w-5 text-[var(--accent)]" />,
-    items: [
-      "HTML & CSS",
-      "NodeJS",
-      "React",
-      "NumPy",
-      "Scikit-learn",
-      "LangChain",
-      "TensorFlow",
-    ],
+    title: "Frameworks & AI",
+    icon: <Terminal className="w-6 h-6 text-emerald-500" />,
+    items: ["HTML/CSS", "Node.js", "React", "NumPy", "Scikit", "LangChain", "TensorFlow"],
+    grad: "from-emerald-500/20 to-teal-500/20",
+    border: "group-hover:border-emerald-500/50"
   },
   {
-    title: "Tools & Platforms",
-    icon: <Database className="h-5 w-5 text-[var(--accent)]" />,
+    title: "Tools & DBs",
+    icon: <Database className="w-6 h-6 text-fuchsia-500" />,
     items: ["MySQL", "MongoDB", "Git", "REST APIs", "RAG"],
+    grad: "from-fuchsia-500/20 to-pink-500/20",
+    border: "group-hover:border-fuchsia-500/50"
   },
   {
-    title: "Soft Skills",
-    icon: <BrainCircuit className="h-5 w-5 text-[var(--accent)]" />,
-    items: [
-      "Problem-Solving",
-      "Team Player",
-      "Project Management",
-      "Adaptability",
-    ],
+    title: "Core Skills",
+    icon: <BrainCircuit className="w-6 h-6 text-amber-500" />,
+    items: ["Problem-Solving", "Team Collaboration", "Management", "Adaptability"],
+    grad: "from-amber-500/20 to-orange-500/20",
+    border: "group-hover:border-amber-500/50"
   },
 ];
 
 const projects = [
   {
-    name: "Vibe - Emotion Detection System",
+    name: "Vibe - Emotion Detection",
     date: "January 2025",
-    summary:
-      "Built a real-time facial emotion recognition system with OpenCV and DeepFace, then wrapped it in a Streamlit interface for live interaction and monitoring.",
-    impact:
-      "Demonstrated practical computer vision and deep learning deployment in a user-facing environment with smooth visualization and high usability.",
-    tech: "Python, OpenCV, DeepFace, TensorFlow, Matplotlib, Streamlit",
+    summary: "Real-time facial emotion recognition with OpenCV and DeepFace, wrapped in an interactive Streamlit dashboard.",
+    impact: "Deployed a seamless user-facing computer vision solution with low latency monitoring.",
+    tech: ["Python", "OpenCV", "DeepFace", "TensorFlow", "Streamlit"],
     link: "https://github.com/rumita-mandal",
+    color: "from-blue-600 to-indigo-600"
   },
   {
-    name: "CineMind - Hybrid Movie Recommending Engine",
+    name: "CineMind Engine",
     date: "September 2025",
-    summary:
-      "Created a personalized movie recommendation engine that suggests titles from user preferences and content similarity.",
-    impact:
-      "Applied TF-IDF and cosine similarity to rank movie metadata effectively and improve relevance of recommendations.",
-    tech: "Python, Pandas, NumPy, Scikit-learn, TF-IDF, Streamlit",
+    summary: "Hybrid movie recommendation engine combining user preferences with content similarity and collaborative filtering.",
+    impact: "Applied TF-IDF and cosine similarity for high-relevance catalog ranking and discovery.",
+    tech: ["Python", "Pandas", "Scikit-learn", "TF-IDF"],
     link: "https://github.com/rumita-mandal",
+    color: "from-emerald-600 to-teal-600"
   },
 ];
 
-const certificates = [
-  "Computation Theory: Language Principle and Finite Automata - Infosys (November 2025)",
-  "C++ Programming and Data Structures and Algorithm - CSE Pathsala (July 2025)",
-  "ChatGPT-4 Prompt Engineering - Infosys (August 2025)",
-  "Packet Switching Networks and Algorithms - University of Colorado (November 2024)",
-  "Peer-to-Peer Protocols and Local Area Network - University of Colorado (November 2024)",
-  "Fundamentals of Network Communication - University of Colorado (November 2024)",
-  "The Bits and Bytes of Computer Networking - Google (November 2024)",
+const milestones = [
+  { type: "edu", title: "Lovely Professional University", subtitle: "B.Tech in CSE (CGPA: 8.01)", date: "2023 - Present", icon: <GraduationCap className="w-5 h-5"/> },
+  { type: "cert", title: "Computation Theory & Finite Automata", subtitle: "Infosys", date: "Nov 2025", icon: <Award className="w-5 h-5"/> },
+  { type: "achieve", title: "S1 List Position", subtitle: "Top academic performance among 40k+ students", date: "Nov 2025", icon: <Sparkles className="w-5 h-5"/> },
+  { type: "cert", title: "ChatGPT-4 Prompt Engineering", subtitle: "Infosys", date: "Aug 2025", icon: <Award className="w-5 h-5"/> },
+  { type: "cert", title: "C++ Programming & DSA", subtitle: "CSE Pathsala", date: "Jul 2025", icon: <Award className="w-5 h-5"/> },
+  { type: "edu", title: "City Montessori School", subtitle: "Intermediate (89%)", date: "2021 - 2023", icon: <GraduationCap className="w-5 h-5"/> },
 ];
-
-const achievements = [
-  {
-    title: "Solved 150+ DSA questions on GeeksforGeeks",
-    date: "September 2025",
-    detail:
-      "Strengthened problem-solving and critical-thinking through consistent practice.",
-  },
-  {
-    title: "Secured position in S1 list at university",
-    date: "November 2025",
-    detail:
-      "Recognized among 40,000+ students for strong academic performance and discipline.",
-  },
-];
-
-const education = [
-  {
-    school: "Lovely Professional University",
-    location: "Punjab, India",
-    detail:
-      "Bachelor of Technology in Computer Science and Engineering, CGPA: 7.9",
-    date: "Since August 2023",
-  },
-  {
-    school: "City Montessori School",
-    location: "Uttar Pradesh, India",
-    detail: "Intermediate, Percentile: 89",
-    date: "April 2021 - March 2023",
-  },
-  {
-    school: "City Montessori School",
-    location: "Uttar Pradesh, India",
-    detail: "Matriculation, Percentile: 92",
-    date: "April 2019 - March 2021",
-  },
-];
-
-const sectionMotion = {
-  hidden: { opacity: 0, y: 22 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: [0.2, 0.68, 0.1, 1] as const,
-    },
-  },
-};
-
-const listMotion = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const cardMotion = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.45,
-      ease: [0.2, 0.68, 0.1, 1] as const,
-    },
-  },
-};
 
 export default function Home() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [theme, setTheme] = useState("dark"); // "dark" | "light"
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  const isDark = theme === "dark";
+  const bgMain = isDark ? "bg-[#050505]" : "bg-zinc-50";
+  const textMain = isDark ? "text-white" : "text-zinc-900";
+  const textMuted = isDark ? "text-zinc-400" : "text-zinc-600";
+  const cardBg = isDark ? "bg-white/[0.02]" : "bg-white";
+  const cardBorder = isDark ? "border-white/[0.05]" : "border-zinc-200";
+  const cardHoverBg = isDark ? "hover:bg-white/[0.04]" : "hover:bg-zinc-50";
+
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text-primary)]">
-      <motion.div
-        className="page-glow page-glow-top"
-        animate={{ y: [0, 10, 0], x: [0, -8, 0] }}
-        transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="page-glow page-glow-bottom"
-        animate={{ y: [0, -12, 0], x: [0, 8, 0] }}
-        transition={{ duration: 11, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-      />
+    <div className={`min-h-screen transition-colors duration-500 ease-in-out ${bgMain} ${textMain} selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden`}>
+      
+      {/* Dynamic Ambient Background Glow */}
+      {isDark && (
+        <motion.div
+          className="pointer-events-none fixed inset-0 z-0 opacity-40 transition-opacity duration-300"
+          animate={{
+            background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(99,102,241,0.08), transparent 40%)`
+          }}
+        />
+      )}
+      {!isDark && (
+        <div className="fixed inset-0 z-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-multiply" />
+      )}
 
-      <main className="mx-auto w-full max-w-6xl px-3 sm:px-5 pb-12 pt-6 md:px-10 md:pt-16 lg:pb-20">
-        <motion.section
-          variants={sectionMotion}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.25 }}
+      {/* Floating Theme / Nav Bar */}
+      <motion.nav 
+        initial={{ y: -50, opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-6 px-6 py-3 rounded-full backdrop-blur-xl border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'bg-black/5 border-black/10 shadow-[0_4px_30px_rgba(0,0,0,0.05)]'} transition-colors`}
+      >
+        <div className="flex items-center gap-2 pr-4 border-r border-current opacity-70">
+          <span className="font-extrabold text-lg tracking-tighter">RM<span className="text-indigo-500">.</span></span>
+        </div>
+        
+        <div className="hidden sm:flex items-center gap-6 text-sm font-semibold">
+          <a href="#about" className={`${textMuted} hover:${textMain} transition-colors`}>About</a>
+          <a href="#projects" className={`${textMuted} hover:${textMain} transition-colors`}>Projects</a>
+          <a href="#skills" className={`${textMuted} hover:${textMain} transition-colors`}>Skills</a>
+        </div>
+
+        <button 
+          onClick={() => setTheme(isDark ? "light" : "dark")}
+          className={`p-2.5 rounded-full transition-transform hover:scale-110 active:scale-95 ${isDark ? 'bg-white/10 text-yellow-300' : 'bg-black/10 text-indigo-500'}`}
         >
-          <div className="mb-4 sm:mb-6 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-[var(--text-muted)]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--text-muted)]">
-              Portfolio
-            </p>
-          </div>
-          <motion.div
-            whileHover={{ y: -3 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="group rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-7 md:p-10 lg:p-12 shadow-[var(--soft-shadow)] hover:border-[var(--line-strong)] transition-colors duration-500"
+          <AnimatePresence mode="wait">
+            {isDark ? (
+              <motion.div key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}><Sun className="w-4 h-4" /></motion.div>
+            ) : (
+              <motion.div key="moon" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}><Moon className="w-4 h-4" /></motion.div>
+            )}
+          </AnimatePresence>
+        </button>
+      </motion.nav>
+
+      <main className="relative z-10 max-w-6xl mx-auto px-6 sm:px-12 pt-48 pb-32 flex flex-col gap-40">
+        
+        {/* HERO SECTION */}
+        <section id="about" className="relative flex flex-col items-start min-h-[50vh]">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
+            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-8 border backdrop-blur-md ${isDark ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-200'}`}
           >
-            <div className="inline-flex items-center gap-2 sm:gap-3 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-3 sm:px-4 py-1.5 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]"></span>
-              </span>
-              <p className="font-heading text-xs font-medium uppercase tracking-[0.15em] text-[var(--accent)]">
-                Rumita Mandal
-              </p>
-            </div>
-            
-            <h1 className="mt-5 sm:mt-6 font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-tight font-medium tracking-tight">
-              Building thoughtful products at the intersection of{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent)] to-purple-400">
-                software, data, and machine intelligence.
-              </span>
-            </h1>
-            <p className="mt-4 sm:mt-6 max-w-2xl text-xs sm:text-sm md:text-base leading-6 sm:leading-7 text-[var(--text-secondary)]">
-              Computer Science student focused on practical AI applications,
-              strong software fundamentals, and clean user experiences. I enjoy
-              turning ideas into functional products that solve real problems.
-            </p>
-
-            <motion.div
-              className="mt-6 sm:mt-8 md:mt-10 flex flex-col gap-3 sm:flex-row sm:gap-3 flex-wrap"
-              variants={listMotion}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.35 }}
-            >
-              <motion.a
-                variants={cardMotion}
-                whileHover={{ y: -3, scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                href="https://www.linkedin.com/in/rumita-mandal-63a1a7293"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full bg-[var(--text-primary)] px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-[var(--bg)] transition-all duration-300 hover:bg-white/90 active:scale-95 shadow-lg hover:shadow-xl relative overflow-hidden group"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Linkedin className="h-4 w-4 relative z-10" />
-                <span className="relative z-10">LinkedIn</span>
-              </motion.a>
-              <motion.a
-                variants={cardMotion}
-                whileHover={{ y: -3, scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                href="https://github.com/rumita-mandal"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--surface-2)] px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-300 hover:bg-[var(--line)] hover:border-[var(--accent)]/50 active:scale-95 shadow-md hover:shadow-lg group"
-              >
-                <Github className="h-4 w-4" />
-                <span>GitHub</span>
-              </motion.a>
-              <motion.a
-                variants={cardMotion}
-                whileHover={{ y: -3, scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                href="/cv%20of%20Rumita.doc"
-                download
-                className="flex items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-[var(--text-secondary)] transition-all duration-300 hover:text-[var(--text-primary)] hover:border-[var(--line-strong)] hover:bg-[var(--line)] active:scale-95 shadow-md hover:shadow-lg group"
-              >
-                <motion.span
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  <Download className="h-4 w-4" />
-                </motion.span>
-                <span>Resume</span>
-              </motion.a>
-            </motion.div>
-          </motion.div>
-        </motion.section>
-
-        <motion.section
-          className="mt-10 sm:mt-12 md:mt-16 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2"
-          variants={listMotion}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {skillGroups.map((group, groupIdx) => (
-            <motion.article
-              key={group.title}
-              variants={cardMotion}
-              className="group rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6 transition-all duration-500 hover:border-[var(--line-strong)] overflow-hidden relative"
-              whileHover={{ y: -4 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 relative z-10">
-                <motion.div 
-                  className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--surface-2)] group-hover:border-[var(--accent)] transition-colors duration-300"
-                  whileHover={{ scale: 1.1, rotate: 8 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {group.icon}
-                </motion.div>
-                <motion.h2 
-                  className="font-heading text-sm sm:text-lg md:text-xl font-medium group-hover:text-[var(--accent)] transition-colors duration-300"
-                  whileHover={{ x: 2 }}
-                >
-                  {group.title}
-                </motion.h2>
-              </div>
-              <motion.ul 
-                className="flex flex-wrap gap-2 relative z-10"
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.05,
-                    }
-                  }
-                }}
-              >
-                {group.items.map((item, itemIdx) => (
-                  <motion.li
-                    key={item}
-                    variants={{
-                      hidden: { opacity: 0, scale: 0.8 },
-                      show: { opacity: 1, scale: 1 }
-                    }}
-                    whileHover={{ 
-                      y: -2, 
-                      scale: 1.05,
-                      boxShadow: "0 8px 16px rgba(var(--accent-rgb), 0.15)"
-                    }}
-                    className="rounded-md border border-[var(--line)] bg-[var(--surface-2)] px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-all duration-300 group-hover:text-[var(--text-primary)] group-hover:border-[var(--accent)]/50 cursor-pointer"
-                  >
-                    {item}
-                  </motion.li>
-                ))}
-              </motion.ul>
-            </motion.article>
-          ))}
-        </motion.section>
-
-        <motion.section
-          className="mt-10 sm:mt-12 md:mt-16"
-          variants={sectionMotion}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.22 }}
-        >
-          <header className="mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <motion.div 
-                className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl bg-[var(--surface)] border border-[var(--line)]"
-                whileHover={{ rotate: -10, scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Cpu className="h-4 sm:h-5 w-4 sm:w-5 text-[var(--text-primary)]" />
-              </motion.div>
-              <h2 className="font-heading text-xl sm:text-2xl md:text-3xl font-medium">Projects</h2>
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)] self-start sm:self-auto">
-              Builds
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
             </span>
-          </header>
-          <motion.div
-            className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 md:grid-cols-2"
-            variants={listMotion}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.25 }}
-          >
-            {projects.map((project, projectIdx) => (
-              <motion.article
-                key={project.name}
-                variants={cardMotion}
-                className="group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6 md:p-8 transition-all duration-500 hover:border-[var(--accent)]/50 overflow-hidden"
-                whileHover={{ y: -6, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
-              >
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[var(--accent)]/20 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                
-                <div className="relative z-10">
-                  <div className="flex flex-col gap-3 mb-4">
-                    <motion.h3 
-                      className="font-heading text-base sm:text-lg md:text-xl font-medium leading-snug group-hover:text-[var(--accent)] transition-colors duration-300"
-                      whileHover={{ x: 2 }}
-                    >
-                      {project.name}
-                    </motion.h3>
-                    <motion.span 
-                      className="w-fit rounded-full border border-[var(--line)] bg-[var(--surface-2)] px-2.5 sm:px-3 py-1 text-xs text-[var(--text-muted)] group-hover:border-[var(--accent)]/50 transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      {project.date}
-                    </motion.span>
-                  </div>
-                  <p className="leading-relaxed text-xs sm:text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-secondary)]/90 transition-colors">
-                    {project.summary}
-                  </p>
-                  <p className="mt-3 leading-relaxed text-xs sm:text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-secondary)]/90 transition-colors">
-                    {project.impact}
-                  </p>
-                  
-                  <motion.div 
-                    className="mt-4 sm:mt-6 flex flex-wrap gap-2"
-                    variants={{
-                      hidden: { opacity: 0 },
-                      show: {
-                        opacity: 1,
-                        transition: { staggerChildren: 0.08 }
-                      }
-                    }}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                  >
-                    {project.tech.split(", ").map((t) => (
-                      <motion.span 
-                        key={t} 
-                        className="text-xs font-medium text-[var(--accent)] bg-[var(--accent)]/10 px-2 sm:px-2.5 py-1 rounded-md border border-[var(--accent)]/20 group-hover:border-[var(--accent)]/50 transition-all"
-                        variants={{
-                          hidden: { opacity: 0, scale: 0.8 },
-                          show: { opacity: 1, scale: 1 }
-                        }}
-                        whileHover={{ scale: 1.05, backgroundColor: "rgba(var(--accent-rgb), 0.2)" }}
-                      >
-                        {t}
-                      </motion.span>
-                    ))}
-                  </motion.div>
-                </div>
-
-                <div className="mt-5 sm:mt-6 md:mt-8 pt-4 sm:pt-5 md:pt-6 border-t border-[var(--line)] relative z-10">
-                  <motion.a
-                    whileHover={{ x: 6 }}
-                    whileTap={{ scale: 0.95 }}
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors group-hover:text-[var(--accent)]"
-                  >
-                    View Code
-                    <motion.span
-                      animate={{ x: [0, 2, 0] }}
-                      transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
-                    >
-                      <ExternalLink className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
-                    </motion.span>
-                  </motion.a>
-                </div>
-              </motion.article>
-            ))}
+            <span className={`text-xs font-bold tracking-widest uppercase ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>Available for work</span>
           </motion.div>
-        </motion.section>
 
-        <motion.section
-          className="mt-10 sm:mt-12 md:mt-16 grid gap-5 sm:gap-6 lg:grid-cols-[1fr_1.2fr]"
-          variants={sectionMotion}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <div className="flex flex-col gap-5 sm:gap-6">
-            <motion.article
-              className="rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6 md:p-8 transition-colors duration-500 hover:border-[var(--line-strong)] group"
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center gap-2 sm:gap-3 mb-5 sm:mb-6">
-                <motion.div 
-                  className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl bg-[var(--surface-2)] border border-[var(--line)]"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <Award className="h-4 sm:h-5 w-4 sm:w-5 text-[var(--text-primary)]" />
-                </motion.div>
-                <h2 className="font-heading text-lg sm:text-xl md:text-2xl font-medium">Certificates</h2>
-              </div>
-              <motion.ul
-                className="space-y-2 sm:space-y-3"
-                variants={listMotion}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.35 }}
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-6xl sm:text-7xl md:text-[5.5rem] font-black tracking-tighter mb-8 leading-[1.05]"
+          >
+            Crafting code <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+              infused with AI.
+            </span>
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
+            className={`text-xl sm:text-2xl ${textMuted} max-w-2xl leading-relaxed mb-12`}
+          >
+            I'm <strong className={textMain}>Rumita Mandal</strong>, a Computer Science student dedicated to blending software engineering fundamentals with modern AI to solve real-world problems gracefully.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-wrap items-center gap-4"
+          >
+            <a href="https://github.com/rumita-mandal" target="_blank" className={`flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all hover:-translate-y-1 hover:shadow-lg ${isDark ? 'bg-white text-black hover:shadow-white/20' : 'bg-black text-white hover:shadow-black/20'}`}>
+              <Github className="w-5 h-5" /> Explore Work
+            </a>
+            <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" target="_blank" className={`flex items-center gap-3 p-4 rounded-full border transition-all hover:scale-110 active:scale-95 ${isDark ? 'border-white/20 hover:bg-white/10' : 'border-black/20 hover:bg-black/5'}`}>
+              <Linkedin className="w-5 h-5" />
+            </a>
+            <a href="/cv%20of%20Rumita.doc" download className={`flex items-center gap-3 p-4 rounded-full border transition-all hover:scale-110 active:scale-95 ${isDark ? 'border-white/20 hover:bg-white/10' : 'border-black/20 hover:bg-black/5'}`}>
+              <Download className="w-5 h-5" />
+            </a>
+          </motion.div>
+        </section>
+
+        {/* PROJECTS */}
+        <section id="projects" className="scroll-mt-40">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Featured Projects</h2>
+            <div className={`flex-1 h-[2px] ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
+          </motion.div>
+
+          <div className="flex flex-col gap-12">
+            {projects.map((project, idx) => (
+              <motion.div
+                key={project.name}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
+                className={`group relative overflow-hidden rounded-[2.5rem] ${cardBg} border ${cardBorder} ${cardHoverBg} transition-all duration-500`}
               >
-                {certificates.map((certificate, idx) => (
-                  <motion.li
-                    key={certificate}
-                    variants={cardMotion}
-                    whileHover={{ x: 4 }}
-                    className="group/item flex gap-3 rounded-xl sm:rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-3 sm:px-4 py-2.5 sm:py-3 transition-colors hover:border-[var(--line-strong)] cursor-pointer"
-                  >
-                    <motion.div 
-                      className="mt-1 h-1.5 w-1.5 flex-none rounded-full bg-[var(--accent)]"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, delay: idx * 0.1, repeat: Number.POSITIVE_INFINITY }}
-                    />
-                    <span className="text-xs sm:text-sm leading-snug tracking-tight text-[var(--text-secondary)] group-hover/item:text-[var(--text-primary)] transition-colors">
-                      {certificate}
-                    </span>
-                  </motion.li>
-                ))}
-              </motion.ul>
-            </motion.article>
+                {/* Accent Background Glow overlay */}
+                <div className={`absolute top-0 right-0 w-[40vw] h-[40vh] bg-gradient-to-br ${project.color} blur-[120px] opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none`} />
+                
+                <div className="p-8 sm:p-12 md:p-16 flex flex-col md:flex-row gap-8 md:gap-16 relative z-10">
+                  <div className="flex-1">
+                    <div className="inline-flex items-center gap-3 mb-6">
+                      <span className="h-px w-8 bg-indigo-500" />
+                      <span className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>{project.date}</span>
+                    </div>
+                    
+                    <h3 className="text-3xl sm:text-4xl font-bold mb-6">{project.name}</h3>
+                    <p className={`${textMuted} text-lg sm:text-xl leading-relaxed mb-8`}>{project.summary}</p>
+                    
+                    <a href={project.link} target="_blank" className={`inline-flex items-center gap-2 pb-1 border-b-2 border-transparent hover:border-indigo-500 font-bold text-indigo-500 transition-colors group/link`}>
+                      View Case Study <ExternalLink className="w-4 h-4 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
+                    </a>
+                  </div>
+                  
+                  <div className={`md:w-1/3 p-6 sm:p-8 rounded-[1.5rem] flex flex-col justify-between ${isDark ? 'bg-black/40 border border-white/5 shadow-inner' : 'bg-zinc-100 border border-zinc-200'}`}>
+                    <div>
+                      <span className="block text-sm font-bold mb-2 uppercase tracking-wider opacity-50">Impact</span>
+                      <p className="text-sm font-medium leading-relaxed">{project.impact}</p>
+                    </div>
+                    <div className="mt-8 pt-8 border-t border-current opacity-70 flex flex-wrap gap-2">
+                      {project.tech.map((t) => (
+                        <span key={t} className={`px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'}`}>
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* DYNAMIC SKILLS */}
+        <section id="skills" className="scroll-mt-40">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Capabilities</h2>
+            <div className={`flex-1 h-[2px] ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {skillGroups.map((group, idx) => (
+              <motion.div
+                key={group.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className={`group relative p-8 sm:p-10 rounded-[2rem] ${cardBg} border ${cardBorder} ${group.border} overflow-hidden transition-all duration-300 shadow-xl`}
+              >
+                <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${group.grad} blur-[80px] opacity-30 group-hover:opacity-100 transition-opacity duration-500`} />
+                
+                <div className={`mb-8 inline-flex p-5 rounded-[1rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'} group-hover:scale-110 transition-transform duration-500 shadow-sm`}>
+                  {group.icon}
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-6">{group.title}</h3>
+                <div className="flex flex-wrap gap-3 relative z-10 w-4/5">
+                  {group.items.map((item, i) => (
+                    <motion.span 
+                      key={item} 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 + (i * 0.05) }}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold border shadow-sm ${isDark ? 'bg-black/40 border-white/10 text-neutral-200 group-hover:border-white/20' : 'bg-white border-zinc-200 text-zinc-700'}`}
+                    >
+                      {item}
+                    </motion.span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* JOURNEY LOG */}
+        <section className="scroll-mt-40">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Timeline Log</h2>
+            <div className={`flex-1 h-[2px] ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
+          </motion.div>
+
+          <div className="max-w-4xl space-y-4 relative">
+            <div className={`absolute left-[38px] top-4 bottom-4 w-1 rounded-full ${isDark ? 'bg-white/5' : 'bg-black/5'} hidden sm:block`} />
+            
+            {milestones.map((item, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className={`relative flex items-center gap-8 p-6 sm:p-8 rounded-[1.5rem] ${cardBg} border ${cardBorder} ${cardHoverBg} transition-all duration-300 group cursor-default shadow-sm hover:shadow-lg`}
+              >
+                <div className={`hidden sm:flex z-10 items-center justify-center w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-zinc-900 border-white/20' : 'bg-white border-zinc-300'} group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-md`}>
+                  <div className={`transition-colors duration-300 ${
+                    item.type === 'edu' ? 'text-blue-500' :
+                    item.type === 'cert' ? 'text-purple-500' : 'text-emerald-500'
+                  }`}>
+                    {item.icon}
+                  </div>
+                </div>
+                
+                <div className="flex-grow">
+                  <h4 className="text-xl sm:text-2xl font-bold mb-2 group-hover:text-indigo-500 transition-colors">{item.title}</h4>
+                  <p className={`text-base sm:text-lg ${textMuted}`}>{item.subtitle}</p>
+                </div>
+                
+                <div className={`whitespace-nowrap px-4 py-2 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'} text-sm font-bold uppercase tracking-wider`}>
+                  {item.date}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      {/* MINIMAL FOOTER */}
+      <footer className={`border-t ${isDark ? 'border-white/10 bg-[#050505]/80' : 'border-zinc-200 bg-zinc-50/80'} py-12 px-6 sm:px-12 backdrop-blur-md relative z-10`}>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+            <p className={`text-sm font-bold tracking-wide uppercase ${textMuted}`}>Open to new opportunities</p>
           </div>
 
-          <motion.div className="flex flex-col gap-5 sm:gap-6" variants={listMotion}>
-            <motion.article
-              variants={cardMotion}
-              className="rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6 md:p-8 transition-colors duration-500 hover:border-[var(--line-strong)] group"
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center gap-2 sm:gap-3 mb-5 sm:mb-6">
-                <motion.div 
-                  className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl bg-[var(--surface-2)] border border-[var(--line)]"
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  <Sparkles className="h-4 sm:h-5 w-4 sm:w-5 text-[var(--text-primary)]" />
-                </motion.div>
-                <h2 className="font-heading text-lg sm:text-xl md:text-2xl font-medium">Achievements</h2>
-              </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                {achievements.map((item, idx) => (
-                  <motion.li 
-                    key={item.title} 
-                    className="rounded-xl sm:rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] p-3 sm:p-4 md:p-5 transition-all hover:border-[var(--accent)] hover:bg-[var(--surface-2)]/50 cursor-pointer group/achievement"
-                    whileHover={{ y: -2, scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    style={{ transitionDelay: `${idx * 0.1}s` }}
-                  >
-                    <p className="text-xs sm:text-sm font-semibold group-hover/achievement:text-[var(--accent)] transition-colors">{item.title}</p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)] font-medium">{item.date}</p>
-                    <p className="mt-2 sm:mt-3 text-xs sm:text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {item.detail}
-                    </p>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.article>
+          <div className="flex items-center gap-8">
+            <a href="mailto:rumita.mandal@example.com" className={`text-sm font-bold flex items-center gap-2 ${textMuted} hover:${textMain} transition-colors group`}>
+              <Mail className="w-5 h-5 group-hover:text-indigo-500 transition-colors" /> Say Hello
+            </a>
+            <a href="https://github.com/rumita-mandal" className={`p-3 rounded-full border ${isDark ? 'border-white/10 hover:bg-white/10' : 'border-black/10 hover:bg-black/5'} transition-all hover:scale-110`}><Github className="w-5 h-5" /></a>
+            <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" className={`p-3 rounded-full border ${isDark ? 'border-white/10 hover:bg-white/10' : 'border-black/10 hover:bg-black/5'} transition-all hover:scale-110`}><Linkedin className="w-5 h-5" /></a>
+          </div>
 
-            <motion.article
-              variants={cardMotion}
-              className="rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6 md:p-8 transition-colors duration-500 hover:border-[var(--line-strong)] group"
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center gap-2 sm:gap-3 mb-5 sm:mb-6">
-                <motion.div 
-                  className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl bg-[var(--surface-2)] border border-[var(--line)]"
-                  whileHover={{ rotateY: 360 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <GraduationCap className="h-4 sm:h-5 w-4 sm:w-5 text-[var(--text-primary)]" />
-                </motion.div>
-                <h2 className="font-heading text-lg sm:text-xl md:text-2xl font-medium">Education</h2>
-              </div>
-              <ul className="space-y-4 sm:space-y-5 md:space-y-4">
-                {education.map((item, idx) => (
-                  <motion.li 
-                    key={item.school + item.date} 
-                    className="relative pl-5 sm:pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-[var(--line)] last:before:hidden group/edu"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.15 }}
-                  >
-                    <motion.span 
-                      className="absolute left-[-5px] top-2 h-2.5 w-2.5 rounded-full border-2 border-[var(--bg)] bg-[var(--accent)]"
-                      whileHover={{ scale: 1.3 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    <div className="flex flex-col sm:gap-1 cursor-pointer group-hover/edu:opacity-100 opacity-90 transition-opacity">
-                      <p className="font-semibold text-xs sm:text-base text-[var(--text-primary)]">{item.school}</p>
-                      <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--accent)] mt-1">
-                        {item.date}
-                      </p>
-                    </div>
-                    <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">{item.location}</p>
-                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {item.detail}
-                    </p>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.article>
-          </motion.div>
-        </motion.section>
-      </main>
+        </div>
+      </footer>
     </div>
   );
 }
