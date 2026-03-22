@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Github,
   Linkedin,
@@ -75,6 +76,24 @@ const projects = [
     link: "https://github.com/rumita-mandal",
     color: "from-emerald-600 to-teal-600"
   },
+  {
+    name: "Health Risk Detection System",
+    date: "2026",
+    summary: "A predictive system to evaluate and monitor health risks and patient medication adherence.",
+    impact: "Leveraged predictive modeling to improve tracking and early interventions for patient adherence.",
+    tech: ["Python", "Machine Learning", "Data Analysis"],
+    link: "https://github.com/rumita-mandal/Health_Risk_Detection_System-Adherence-",
+    color: "from-rose-600 to-pink-600"
+  },
+  {
+    name: "CausalRiskNet",
+    date: "2026",
+    summary: "A causal inference network architecture for evaluating complex risk relationships in datasets.",
+    impact: "Implemented advanced causal discovery algorithms to isolate true risk factors beyond standard correlations.",
+    tech: ["Python", "Deep Learning", "Causal Inference"],
+    link: "https://github.com/rumita-mandal/CausalRiskNet",
+    color: "from-fuchsia-600 to-purple-600"
+  },
 ];
 
 const milestones = [
@@ -94,6 +113,43 @@ const technologies = [
 export default function Home() {
   const [theme, setTheme] = useState("dark"); // "dark" | "light"
 
+  // Mouse Interaction
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { damping: 50, stiffness: 400 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+
+  const [windowSize, setWindowSize] = useState({ width: 1000, height: 800 });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+      mouseX.set(window.innerWidth / 2);
+      mouseY.set(window.innerHeight / 2);
+    }
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  // Create interactive background glow
+  const pointerGlow = {
+    background: useTransform(
+      [smoothMouseX, smoothMouseY],
+      ([x, y]) => `radial-gradient(1000px circle at ${x}px ${y}px, ${theme === "dark" ? "rgba(99,102,241,0.08)" : "rgba(99,102,241,0.05)"}, transparent 80%)`
+    )
+  };
+
+  // Parallax transforms for hero elements
+  const parallaxX = useTransform(smoothMouseX, [0, windowSize.width], [-15, 15]);
+  const parallaxY = useTransform(smoothMouseY, [0, windowSize.height], [-15, 15]);
+  const rotateX = useTransform(smoothMouseY, [0, windowSize.height], [5, -5]);
+  const rotateY = useTransform(smoothMouseX, [0, windowSize.width], [-5, 5]);
+
   const isDark = theme === "dark";
   const bgMain = isDark ? "bg-[#050505]" : "bg-zinc-50";
   const textMain = isDark ? "text-white" : "text-zinc-900";
@@ -103,17 +159,51 @@ export default function Home() {
   const cardHoverBg = isDark ? "hover:bg-white/[0.04]" : "hover:bg-zinc-50";
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ease-in-out ${bgMain} ${textMain} selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden font-sans`}>
+    <div className={`min-h-screen transition-colors duration-500 ease-in-out ${bgMain} ${textMain} selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden font-sans relative`}>
       
-      {/* Ambient Backgrounds */}
-      {isDark ? (
-        <div className="fixed inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-      ) : (
-        <>
-          <div className="fixed inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-          <div className="fixed inset-0 z-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-multiply" />
-        </>
-      )}
+      {/* Interactive Cursor Glow Layer */}
+      <motion.div 
+        className="pointer-events-none fixed inset-0 z-20"
+        style={pointerGlow}
+      />
+
+      {/* Dynamic Ambient Background Elements */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Deep background mesh/noise */}
+        {isDark ? (
+          <>
+            <div className="absolute inset-0 bg-[#050505]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:24px_24px] opacity-70" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]" />
+            {/* Top-down fade to hide grid at edges */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] opacity-90" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-zinc-50" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[length:24px_24px]" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-multiply" />
+            <div className="absolute inset-0 bg-gradient-to-b from-zinc-50 via-transparent to-zinc-50 opacity-80" />
+          </>
+        )}
+
+        {/* Massive Ambient Glows */}
+        <motion.div
+          animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          className={`absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full blur-[120px] mix-blend-screen opacity-30 ${isDark ? 'bg-indigo-600/30' : 'bg-indigo-300/40'}`}
+        />
+        <motion.div
+          animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+          className={`absolute top-[40%] -left-[20%] w-[70vw] h-[70vw] rounded-full blur-[140px] mix-blend-screen opacity-20 ${isDark ? 'bg-emerald-600/30' : 'bg-emerald-300/40'}`}
+        />
+        <motion.div
+          animate={{ x: [0, 50, 0], y: [0, -50, 0] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+          className={`absolute -bottom-[20%] left-[20%] w-[50vw] h-[50vw] rounded-full blur-[100px] mix-blend-screen opacity-20 ${isDark ? 'bg-fuchsia-600/30' : 'bg-fuchsia-300/40'}`}
+        />
+      </div>
 
       {/* Floating Theme / Nav Bar */}
       <motion.nav 
@@ -147,11 +237,109 @@ export default function Home() {
         </button>
       </motion.nav>
 
-      <main className="relative z-10 max-w-6xl mx-auto px-6 sm:px-12 pt-48 pb-32 flex flex-col gap-40">
+      <main className="relative z-10 max-w-6xl mx-auto px-6 sm:px-12 pt-48 pb-32 flex flex-col gap-32">
         
-        {/* HERO SECTION */}
-        <section id="about" className="relative flex flex-col items-start min-h-[60vh] justify-center">
+        {/* Floating Skill Boxes Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          {/* Planets / Orbs */}
+          <motion.div
+            animate={{ y: [0, -30, 0], rotate: 360, scale: [0.9, 1.1, 0.9] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute right-[10%] top-[15%] w-48 h-48 rounded-full blur-[8px] opacity-40 mix-blend-screen bg-gradient-to-tr from-indigo-500/60 via-purple-500/30 to-transparent shadow-[inset_0_0_60px_rgba(255,255,255,0.3)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, 50, 0], x: [0, -30, 0], rotate: -360 }}
+            transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+            className="absolute left-[5%] top-[40%] w-72 h-72 rounded-full blur-[12px] opacity-30 mix-blend-screen bg-gradient-to-br from-emerald-500/40 via-teal-500/20 to-transparent shadow-[inset_0_0_80px_rgba(255,255,255,0.1)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, -60, 0], x: [0, 40, 0], scale: [1, 1.2, 1] }}
+            transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute right-[20%] bottom-[5%] w-40 h-40 rounded-full blur-[6px] opacity-40 mix-blend-screen bg-gradient-to-bl from-pink-500/50 via-rose-500/30 to-transparent shadow-[inset_0_0_50px_rgba(255,255,255,0.2)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, -50, 0], x: [0, -30, 0], scale: [1, 1.3, 1] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute left-[25%] top-[10%] w-32 h-32 rounded-full blur-[5px] opacity-50 mix-blend-screen bg-gradient-to-tr from-yellow-500/50 via-orange-500/30 to-transparent shadow-[inset_0_0_30px_rgba(255,255,255,0.2)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, 80, 0], rotate: 360, x: [0, 40, 0] }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear", delay: 1 }}
+            className="absolute right-[5%] top-[60%] w-56 h-56 rounded-full blur-[10px] opacity-30 mix-blend-screen bg-gradient-to-tl from-cyan-500/50 via-blue-500/30 to-transparent shadow-[inset_0_0_70px_rgba(255,255,255,0.15)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, -50, 0], scale: [0.9, 1.1, 0.9], rotate: -180 }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+            className="absolute left-[45%] bottom-[15%] w-20 h-20 rounded-full blur-[1px] opacity-40 mix-blend-screen bg-gradient-to-br from-fuchsia-500/40 via-purple-500/20 to-transparent shadow-[inset_0_0_25px_rgba(255,255,255,0.2)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, 20, 0], x: [0, -50, 0] }}
+            transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+            className="absolute left-[-5%] top-[75%] w-72 h-72 rounded-full blur-[8px] opacity-20 mix-blend-screen bg-gradient-to-t from-zinc-500/20 via-slate-500/10 to-transparent shadow-[inset_0_0_80px_rgba(255,255,255,0.05)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, -60, 0], x: [0, 20, 0], scale: [0.8, 1.2, 0.8] }}
+            transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+            className="absolute left-[30%] top-[70%] w-36 h-36 rounded-full blur-[3px] opacity-30 mix-blend-screen bg-gradient-to-br from-green-500/30 via-emerald-500/20 to-transparent shadow-[inset_0_0_30px_rgba(255,255,255,0.1)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, 40, 0], x: [0, -40, 0], rotate: 180 }}
+            transition={{ duration: 16, repeat: Infinity, ease: "linear", delay: 6 }}
+            className="absolute right-[35%] top-[5%] w-28 h-28 rounded-full blur-[2px] opacity-40 mix-blend-screen bg-gradient-to-bl from-red-500/30 via-orange-500/20 to-transparent shadow-[inset_0_0_20px_rgba(255,255,255,0.15)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+          <motion.div
+            animate={{ y: [0, -25, 0], rotate: 45 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 7 }}
+            className="absolute right-[-2%] bottom-[35%] w-56 h-56 rounded-full blur-[5px] opacity-20 mix-blend-screen bg-gradient-to-t from-indigo-500/30 via-blue-500/10 to-transparent shadow-[inset_0_0_50px_rgba(255,255,255,0.1)]"
+            style={{ transformStyle: "preserve-3d" }}
+          />
+
+          {/* Skill Blocks - Slower & Elegantly Floating with Drag */}
+          {[...technologies, "Machine Learning", "Data Science", "Web Dev", "Problem Solving", "APIs", "Git", "Figma", "Deep Learning", "Algorithms", "Leadership"].map((tech, i) => (
+            <motion.div
+              key={`float-${i}`}
+              animate={{
+                y: [0, i % 2 === 0 ? -40 : -60, 0],
+                x: [0, i % 2 === 0 ? 30 : -30, 0],
+                rotate: [0, i % 2 === 0 ? 15 : -15, 0],
+              }}
+              drag
+              dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+              dragElastic={0.2}
+              whileHover={{ scale: 1.1, zIndex: 50, opacity: 1 }}
+              whileTap={{ cursor: "grabbing", scale: 0.95 }}
+              transition={{
+                duration: 15 + (i % 10),
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.5,
+              }}
+              className={`absolute cursor-grab active:cursor-grabbing px-4 sm:px-6 py-2 sm:py-3 rounded-2xl backdrop-blur-xl opacity-40 transition-colors duration-300 mix-blend-overlay border font-extrabold text-sm sm:text-lg shadow-2xl ${isDark ? 'bg-white/5 border-white/20 text-white hover:bg-indigo-500/20' : 'bg-black/5 border-black/20 text-black hover:bg-indigo-500/20'}`}
+              style={{
+                top: `${(i * 7) % 80}%`,
+                left: `${(i * 13) % 85}%`,
+                scale: 0.6 + (i % 4) * 0.15,
+                transformStyle: "preserve-3d",
+              }}
+            >
+              {tech}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* HERO SECTION (NAME & DESIGNATION) */}
+        <section id="home" className="relative z-10 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[75vh] text-center pt-24">
           <motion.div 
+            style={{ x: parallaxX, y: parallaxY }}
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, bounce: 0.4, type: "spring" }}
             className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-10 border backdrop-blur-md shadow-sm ${isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'}`}
           >
@@ -163,25 +351,27 @@ export default function Home() {
           </motion.div>
 
           <motion.h1 
+            style={{ x: parallaxX, y: parallaxY, rotateX, rotateY, transformStyle: "preserve-3d" }}
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-6xl sm:text-7xl md:text-[6rem] font-black tracking-tighter mb-8 leading-[1.05]"
+            className="text-6xl sm:text-7xl md:text-[6.5rem] font-black tracking-tighter mb-6 leading-[1.05]"
           >
-            Crafting code <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto]">
-              infused with AI.
+            Rumita Mandal <br/>
+            <span className="text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto] mt-4 block" style={{ transform: "translateZ(30px)" }}>
+              AI & Machine Learning Developer
             </span>
           </motion.h1>
 
           <motion.p 
+            style={{ x: useTransform(smoothMouseX, [0, windowSize.width], [-8, 8]), y: useTransform(smoothMouseY, [0, windowSize.height], [-8, 8]) }}
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-            className={`text-xl sm:text-2xl ${textMuted} max-w-2xl leading-relaxed mb-12 font-medium`}
+            className={`text-xl sm:text-2xl md:text-3xl ${textMuted} max-w-3xl mx-auto leading-relaxed mb-12 font-medium`}
           >
-            I&apos;m <strong className={`${textMain} font-black`}>Rumita Mandal</strong>, a Computer Science student dedicated to blending software engineering fundamentals with modern AI to solve real-world problems gracefully.
+            Crafting scalable software and blending engineering fundamentals with modern AI.
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-wrap items-center gap-5 mb-16"
+            className="flex flex-wrap items-center justify-center gap-5"
           >
             <a href="https://github.com/rumita-mandal" target="_blank" className={`group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:shadow-[0_10px_40px_-10px_rgba(255,255,255,0.4)]' : 'bg-black text-white hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.4)]'}`}>
               <Github className="w-5 h-5 transition-transform group-hover:rotate-12" /> Explore Work
@@ -200,13 +390,72 @@ export default function Home() {
             transition={{ delay: 1, duration: 1 }}
             className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2"
           >
-            <span className={`text-xs font-bold uppercase tracking-widest ${textMuted}`}>Scroll</span>
             <motion.div 
               animate={{ y: [0, 8, 0] }} 
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
               className={`w-[1px] h-12 ${isDark ? 'bg-gradient-to-b from-white/40 to-transparent' : 'bg-gradient-to-b from-black/40 to-transparent'}`}
             />
           </motion.div>
+        </section>
+
+        {/* ABOUT SECTION - SCROLL ANIMATED */}
+        <section id="about" className="scroll-mt-40 relative z-10 flex flex-col lg:flex-row items-center justify-between min-h-[60vh] gap-12 py-20 overflow-hidden">
+          
+          <motion.div 
+            initial={{ opacity: 0, x: -100, rotateY: 45 }}
+            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+            viewport={{ once: false, margin: "-20%" }}
+            transition={{ duration: 1, ease: "easeOut", type: "spring", bounce: 0.3 }}
+            className="flex flex-col items-start flex-1 order-2 lg:order-1"
+          >
+            <div className="inline-flex items-center gap-3 mb-8">
+              <span className={`h-[2px] w-10 ${isDark ? 'bg-indigo-400' : 'bg-indigo-600'} rounded-full`} />
+              <span className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-indigo-300' : 'text-indigo-600'}`}>About Me</span>
+            </div>
+
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-8 leading-[1.05]">
+              Driven by <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">Curiosity & Code.</span>
+            </h2>
+
+            <p className={`text-xl sm:text-2xl ${textMuted} max-w-2xl leading-relaxed mb-6 font-medium`}>
+              I believe in building software that not only functions perfectly but feels intuitive. Bringing ideas to life requires a deep understanding of core fundamentals paired with modern tools.
+            </p>
+            <p className={`text-xl sm:text-2xl ${textMuted} max-w-2xl leading-relaxed font-medium`}>
+              From crafting seamless user interfaces to integrating intelligent AI solutions behind the scenes, I love tackling the entire stack to solve real-world problems. Let&apos;s build something that matters.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.5, rotateX: 30, y: 150 }} 
+            whileInView={{ opacity: 1, scale: 1, rotateX: 0, y: 0 }} 
+            viewport={{ once: false, margin: "-20%" }}
+            transition={{ duration: 1.2, bounce: 0.4, type: "spring" }}
+            className="flex-1 order-1 lg:order-2 flex justify-center w-full [perspective:1000px]"
+          >
+            <motion.div 
+              whileHover={{ rotateY: -10, rotateX: 5, scale: 1.05 }}
+              whileTap={{ scale: 0.95, rotateY: 0, rotateX: 0 }}
+              drag
+              dragConstraints={{ left: -20, right: 20, top: -20, bottom: 20 }}
+              dragElastic={0.4}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className={`relative cursor-grab active:cursor-grabbing w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-[3rem] p-2 border border-dashed ${isDark ? 'border-indigo-500/30' : 'border-indigo-500/30'}`}
+              style={{ transformStyle: "preserve-3d" }}
+            >
+              <div className={`w-full h-full rounded-[2.5rem] overflow-hidden border-4 ${isDark ? 'border-[#050505]' : 'border-zinc-50'} relative`}>
+                <Image
+                  src="/pic.jpeg"
+                  alt="Rumita Mandal"
+                  fill
+                  priority
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-indigo-500/20 to-transparent pointer-events-none mix-blend-overlay"></div>
+            </motion.div>
+          </motion.div>
+
         </section>
 
         {/* MARQUEE SECTION */}
@@ -232,7 +481,7 @@ export default function Home() {
                 key={fact.label}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className={`flex items-center gap-4 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} shadow-sm backdrop-blur-md`}
               >
@@ -250,20 +499,22 @@ export default function Home() {
 
         {/* PROJECTS */}
         <section id="projects" className="scroll-mt-40">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} className="flex items-center gap-6 mb-16">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Featured Projects</h2>
             <div className={`flex-1 h-[2px] ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
           </motion.div>
 
-          <div className="flex flex-col gap-12 sm:gap-20">
-            {projects.map((project) => (
+          <div className="flex flex-col gap-16 sm:gap-24 [perspective:1200px]">
+            {projects.map((project, idx) => (
               <motion.div
                 key={project.name}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
-                className={`group relative overflow-hidden rounded-[2.5rem] ${cardBg} border ${cardBorder} ${cardHoverBg} hover:-translate-y-2 transition-all duration-500 shadow-sm hover:shadow-2xl`}
+                initial={{ opacity: 0, y: 100, rotateX: 30, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                whileHover={{ rotateY: idx % 2 === 0 ? 5 : -5, scale: 1.03, z: 50 }}
+                viewport={{ once: false, margin: "-100px" }}
+                transition={{ duration: 0.8, ease: "easeOut", type: "spring", bounce: 0.4 }}
+                className={`group relative overflow-hidden rounded-[2.5rem] ${cardBg} border ${cardBorder} ${cardHoverBg} transition-all duration-500 shadow-xl hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)]`}
+                style={{ transformStyle: "preserve-3d" }}
               >
                 {/* Accent Background Glow overlay */}
                 <div className={`absolute top-0 right-0 w-[50vw] h-[50vh] bg-gradient-to-br ${project.color} blur-[120px] opacity-10 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none`} />
@@ -309,7 +560,7 @@ export default function Home() {
 
         {/* DYNAMIC SKILLS */}
         <section id="skills" className="scroll-mt-40">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} className="flex items-center gap-6 mb-16">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Capabilities</h2>
             <div className={`flex-1 h-[2px] ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
           </motion.div>
@@ -320,7 +571,7 @@ export default function Home() {
                 key={group.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false }}
                 whileHover={{ y: -8, scale: 1.02 }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
                 className={`group relative p-8 sm:p-10 rounded-[2.5rem] ${cardBg} border ${cardBorder} ${group.border} overflow-hidden transition-all duration-500 shadow-lg hover:shadow-2xl`}
@@ -338,9 +589,13 @@ export default function Home() {
                       key={item} 
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.1, rotate: Math.random() > 0.5 ? 2 : -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      drag
+                      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                      dragElastic={0.2}
                       transition={{ delay: 0.1 + (i * 0.05) }}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold border backdrop-blur-sm shadow-sm cursor-default transition-colors ${isDark ? 'bg-black/40 border-white/10 text-neutral-200 hover:border-white/30 hover:bg-black/60' : 'bg-white/60 border-zinc-200 text-zinc-800 hover:border-zinc-400 hover:bg-white'}`}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold border backdrop-blur-sm shadow-sm cursor-grab active:cursor-grabbing transition-colors ${isDark ? 'bg-black/40 border-white/10 text-neutral-200 hover:border-white/30 hover:bg-black/60' : 'bg-white/60 border-zinc-200 text-zinc-800 hover:border-zinc-400 hover:bg-white'}`}
                     >
                       {item}
                     </motion.span>
@@ -353,7 +608,7 @@ export default function Home() {
 
         {/* EDUCATION SECTION */}
         <section className="scroll-mt-40">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} className="flex items-center gap-6 mb-16">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight flex items-center gap-4">
               <GraduationCap className={`w-10 h-10 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} /> Education
             </h2>
@@ -366,27 +621,34 @@ export default function Home() {
             {milestones.filter(m => m.type === 'edu').map((item, idx) => (
               <motion.div 
                 key={idx}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className={`relative flex items-center gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} hover:-translate-y-1 transition-all duration-300 group cursor-default shadow-sm hover:shadow-xl backdrop-blur-sm`}
+                initial={{ opacity: 0, x: -50, rotateY: -15 }}
+                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                viewport={{ once: false, margin: "-50px" }}
+                whileHover={{ scale: 1.02, rotateX: 2 }}
+                transition={{ duration: 0.6, type: "spring", bounce: 0.4, delay: idx * 0.1 }}
+                className={`relative flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} group cursor-default shadow-sm hover:shadow-2xl backdrop-blur-xl ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-white'} transition-all duration-500`}
+                style={{ transformStyle: "preserve-3d" }}
               >
-                <div className={`hidden sm:flex z-10 items-center justify-center w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-[#0a0a0a] border-white/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white border-zinc-200 shadow-md'} group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-                  <div className={`transition-colors duration-300 ${
-                    item.type === 'edu' ? 'text-blue-500' :
-                    item.type === 'cert' ? 'text-purple-500' : 'text-emerald-500'
-                  }`}>
+                {/* 3D Glow Effect */}
+                <div className={`absolute inset-0 rounded-[2rem] bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+
+                <div className={`hidden sm:flex z-10 items-center justify-center min-w-[3.5rem] w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-md'} group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-500`}>
+                  <div className={`transition-colors duration-300 ${isDark ? 'text-blue-400 group-hover:text-blue-300' : 'text-blue-600 group-hover:text-blue-500'}`}>
                     {item.icon}
                   </div>
                 </div>
                 
-                <div className="flex-grow">
-                  <h4 className="text-xl sm:text-2xl font-bold mb-2 group-hover:text-indigo-500 transition-colors tracking-tight">{item.title}</h4>
-                  <p className={`text-base sm:text-lg ${textMuted} font-medium`}>{item.subtitle}</p>
+                <div className="flex-grow relative z-10 w-full">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-2">
+                    <h4 className={`text-xl sm:text-2xl font-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${isDark ? 'group-hover:from-blue-400 group-hover:to-cyan-400' : 'group-hover:from-blue-600 group-hover:to-cyan-600'} transition-all duration-300 tracking-tight leading-tight`}>{item.title}</h4>
+                    <div className={`sm:hidden inline-block px-3 py-1 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700'} text-xs font-bold uppercase tracking-widest`}>
+                      {item.date}
+                    </div>
+                  </div>
+                  <p className={`text-base sm:text-lg ${textMuted} font-semibold`}>{item.subtitle}</p>
                 </div>
                 
-                <div className={`whitespace-nowrap px-4 py-2 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-zinc-300' : 'bg-black/5 border-black/10 text-zinc-600'} text-xs font-bold uppercase tracking-wider backdrop-blur-md`}>
+                <div className={`hidden sm:block whitespace-nowrap px-5 py-2.5 rounded-xl border ${isDark ? 'bg-black/40 border-white/10 text-blue-300' : 'bg-white/80 border-blue-100 text-blue-700 shadow-sm'} text-xs font-black uppercase tracking-widest backdrop-blur-md group-hover:border-blue-500/30 transition-colors`}>
                   {item.date}
                 </div>
               </motion.div>
@@ -396,7 +658,7 @@ export default function Home() {
 
         {/* CERTIFICATIONS SECTION */}
         <section className="scroll-mt-40">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} className="flex items-center gap-6 mb-16">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight flex items-center gap-4">
               <Award className={`w-10 h-10 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} /> Certifications
             </h2>
@@ -409,27 +671,34 @@ export default function Home() {
             {milestones.filter(m => m.type === 'cert').map((item, idx) => (
               <motion.div 
                 key={idx}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className={`relative flex items-center gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} hover:-translate-y-1 transition-all duration-300 group cursor-default shadow-sm hover:shadow-xl backdrop-blur-sm`}
+                initial={{ opacity: 0, x: -50, rotateY: 15 }}
+                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                viewport={{ once: false, margin: "-50px" }}
+                whileHover={{ scale: 1.02, rotateX: -2 }}
+                transition={{ duration: 0.6, type: "spring", bounce: 0.4, delay: idx * 0.1 }}
+                className={`relative flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} group cursor-default shadow-sm hover:shadow-2xl backdrop-blur-xl ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-white'} transition-all duration-500`}
+                style={{ transformStyle: "preserve-3d" }}
               >
-                <div className={`hidden sm:flex z-10 items-center justify-center w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-[#0a0a0a] border-white/10 shadow-[0_0_15px_rgba(168,85,247,0.2)]' : 'bg-white border-zinc-200 shadow-md'} group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500`}>
-                  <div className={`transition-colors duration-300 ${
-                    item.type === 'edu' ? 'text-blue-500' :
-                    item.type === 'cert' ? 'text-purple-500' : 'text-emerald-500'
-                  }`}>
+                {/* 3D Glow Effect */}
+                <div className={`absolute inset-0 rounded-[2rem] bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+
+                <div className={`hidden sm:flex z-10 items-center justify-center min-w-[3.5rem] w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_0_20px_rgba(168,85,247,0.3)]' : 'bg-gradient-to-br from-white to-purple-50 border-purple-200 shadow-md'} group-hover:scale-110 group-hover:-rotate-[15deg] transition-all duration-500`}>
+                  <div className={`transition-colors duration-300 ${isDark ? 'text-purple-400 group-hover:text-purple-300' : 'text-purple-600 group-hover:text-purple-500'}`}>
                     {item.icon}
                   </div>
                 </div>
                 
-                <div className="flex-grow">
-                  <h4 className="text-xl sm:text-2xl font-bold mb-2 group-hover:text-purple-500 transition-colors tracking-tight">{item.title}</h4>
-                  <p className={`text-base sm:text-lg ${textMuted} font-medium`}>{item.subtitle}</p>
+                <div className="flex-grow relative z-10 w-full">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-2">
+                    <h4 className={`text-xl sm:text-2xl font-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${isDark ? 'group-hover:from-purple-400 group-hover:to-pink-400' : 'group-hover:from-purple-600 group-hover:to-pink-600'} transition-all duration-300 tracking-tight leading-tight`}>{item.title}</h4>
+                    <div className={`sm:hidden inline-block px-3 py-1 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700'} text-xs font-bold uppercase tracking-widest`}>
+                      {item.date}
+                    </div>
+                  </div>
+                  <p className={`text-base sm:text-lg ${textMuted} font-semibold`}>{item.subtitle}</p>
                 </div>
                 
-                <div className={`whitespace-nowrap px-4 py-2 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-zinc-300' : 'bg-black/5 border-black/10 text-zinc-600'} text-xs font-bold uppercase tracking-wider backdrop-blur-md`}>
+                <div className={`hidden sm:block whitespace-nowrap px-5 py-2.5 rounded-xl border ${isDark ? 'bg-black/40 border-white/10 text-purple-300' : 'bg-white/80 border-purple-100 text-purple-700 shadow-sm'} text-xs font-black uppercase tracking-widest backdrop-blur-md group-hover:border-purple-500/30 transition-colors`}>
                   {item.date}
                 </div>
               </motion.div>
@@ -439,7 +708,7 @@ export default function Home() {
 
         {/* ACHIEVEMENTS & TIMELINE LOG */}
         <section className="scroll-mt-40">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex items-center gap-6 mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} className="flex items-center gap-6 mb-16">
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight flex items-center gap-4">
               <Sparkles className={`w-10 h-10 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} /> Timeline Log
             </h2>
@@ -452,27 +721,34 @@ export default function Home() {
             {milestones.filter(m => m.type !== 'edu' && m.type !== 'cert').map((item, idx) => (
               <motion.div 
                 key={idx}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className={`relative flex items-center gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} hover:-translate-y-1 transition-all duration-300 group cursor-default shadow-sm hover:shadow-xl backdrop-blur-sm`}
+                initial={{ opacity: 0, x: -50, rotateY: -10 }}
+                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                viewport={{ once: false, margin: "-50px" }}
+                whileHover={{ scale: 1.02, rotateX: 2 }}
+                transition={{ duration: 0.6, type: "spring", bounce: 0.4, delay: idx * 0.1 }}
+                className={`relative flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} group cursor-default shadow-sm hover:shadow-2xl backdrop-blur-xl ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-white'} transition-all duration-500`}
+                style={{ transformStyle: "preserve-3d" }}
               >
-                <div className={`hidden sm:flex z-10 items-center justify-center w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-[#0a0a0a] border-white/10 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white border-zinc-200 shadow-md'} group-hover:scale-110 group-hover:rotate-12 transition-all duration-500`}>
-                  <div className={`transition-colors duration-300 ${
-                    item.type === 'edu' ? 'text-blue-500' :
-                    item.type === 'cert' ? 'text-purple-500' : 'text-emerald-500'
-                  }`}>
+                {/* 3D Glow Effect */}
+                <div className={`absolute inset-0 rounded-[2rem] bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+
+                <div className={`hidden sm:flex z-10 items-center justify-center min-w-[3.5rem] w-14 h-14 rounded-[1.2rem] border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-gradient-to-br from-white to-emerald-50 border-emerald-200 shadow-md'} group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-500`}>
+                  <div className={`transition-colors duration-300 ${isDark ? 'text-emerald-400 group-hover:text-emerald-300' : 'text-emerald-600 group-hover:text-emerald-500'}`}>
                     {item.icon}
                   </div>
                 </div>
                 
-                <div className="flex-grow">
-                  <h4 className="text-xl sm:text-2xl font-bold mb-2 group-hover:text-emerald-400 transition-colors tracking-tight">{item.title}</h4>
-                  <p className={`text-base sm:text-lg ${textMuted} font-medium`}>{item.subtitle}</p>
+                <div className="flex-grow relative z-10 w-full">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-2">
+                    <h4 className={`text-xl sm:text-2xl font-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${isDark ? 'group-hover:from-emerald-400 group-hover:to-teal-400' : 'group-hover:from-emerald-600 group-hover:to-teal-600'} transition-all duration-300 tracking-tight leading-tight`}>{item.title}</h4>
+                    <div className={`sm:hidden inline-block px-3 py-1 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700'} text-xs font-bold uppercase tracking-widest`}>
+                      {item.date}
+                    </div>
+                  </div>
+                  <p className={`text-base sm:text-lg ${textMuted} font-semibold`}>{item.subtitle}</p>
                 </div>
                 
-                <div className={`whitespace-nowrap px-4 py-2 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-zinc-300' : 'bg-black/5 border-black/10 text-zinc-600'} text-xs font-bold uppercase tracking-wider backdrop-blur-md`}>
+                <div className={`hidden sm:block whitespace-nowrap px-5 py-2.5 rounded-xl border ${isDark ? 'bg-black/40 border-white/10 text-emerald-300' : 'bg-white/80 border-emerald-100 text-emerald-700 shadow-sm'} text-xs font-black uppercase tracking-widest backdrop-blur-md group-hover:border-emerald-500/30 transition-colors`}>
                   {item.date}
                 </div>
               </motion.div>
@@ -485,7 +761,7 @@ export default function Home() {
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             transition={{ duration: 0.8 }}
             className={`relative overflow-hidden rounded-[3rem] p-10 sm:p-16 md:p-24 text-center ${isDark ? 'bg-indigo-900/10 border border-indigo-500/20' : 'bg-indigo-50 border border-indigo-100'} shadow-2xl`}
           >
