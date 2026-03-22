@@ -24,6 +24,7 @@ import {
   Calendar,
   Briefcase
 } from "lucide-react";
+import Background3D from "../components/Background3D";
 
 // --- DATA ---
 const skillGroups = [
@@ -112,6 +113,7 @@ const technologies = [
 
 export default function Home() {
   const [theme, setTheme] = useState("dark"); // "dark" | "light"
+  const [isLoading, setIsLoading] = useState(true);
 
   // Mouse Interaction
   const mouseX = useMotionValue(0);
@@ -133,7 +135,15 @@ export default function Home() {
       mouseY.set(e.clientY);
     };
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2800); // 2.8s loading sequence
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(timer);
+    };
   }, [mouseX, mouseY]);
 
   // Create interactive background glow
@@ -150,17 +160,55 @@ export default function Home() {
   const rotateX = useTransform(smoothMouseY, [0, windowSize.height], [5, -5]);
   const rotateY = useTransform(smoothMouseX, [0, windowSize.width], [-5, 5]);
 
-  const isDark = theme === "dark";
-  const bgMain = isDark ? "bg-[#050505]" : "bg-zinc-50";
-  const textMain = isDark ? "text-white" : "text-zinc-900";
-  const textMuted = isDark ? "text-zinc-400" : "text-zinc-500";
-  const cardBg = isDark ? "bg-white/[0.02]" : "bg-white";
-  const cardBorder = isDark ? "border-white/[0.05]" : "border-zinc-200";
-  const cardHoverBg = isDark ? "hover:bg-white/[0.04]" : "hover:bg-zinc-50";
+  const isDark = true; // Forced dark/hacker mode
+  const bgMain = "bg-black";
+  const textMain = "text-[#00ff41]";
+  const textMuted = "text-[#008f11]";
+  const cardBg = "bg-black/40 border border-[#00ff41]/30 backdrop-blur-md";
+  const cardBorder = "border-[#00ff41]/30";
+  const cardHoverBg = "hover:bg-[#00ff41]/10 hover:border-[#00ff41]";
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ease-in-out ${bgMain} ${textMain} selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden font-sans relative`}>
-      
+    <div className={`min-h-screen transition-colors duration-500 ease-in-out ${bgMain} ${textMain} selection:bg-[#00ff41]/30 selection:text-white overflow-x-hidden font-mono relative`}>
+      {/* INITIALIZATION SEQUENCE OVERLAY */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center font-mono text-[#00ff41] select-none"
+          >
+            <div className="flex flex-col items-center max-w-lg w-full px-6 gap-6">
+              <motion.div 
+                animate={{ opacity: [1, 0.4, 1] }} 
+                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                className="text-3xl sm:text-4xl font-black tracking-widest text-center uppercase"
+              >
+                SYSTEM_BOOT...
+              </motion.div>
+              
+              <div className="w-full h-3 border-2 border-[#00ff41]/40 p-[2px] rounded-none shadow-[0_0_15px_rgba(0,255,65,0.2)]">
+                <motion.div 
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2.4, ease: "easeInOut" }}
+                  className="h-full bg-[#00ff41] shadow-[0_0_10px_#00ff41]"
+                />
+              </div>
+
+              <div className="w-full text-xs sm:text-sm font-bold flex flex-col gap-2 mt-4 opacity-80 backdrop-blur-sm p-4 border border-[#00ff41]/20">
+                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>&gt; ROOT_ACCESS... INITIALIZED</motion.div>
+                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}>&gt; LOADING_MATRIX_CORE... OK</motion.div>
+                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5 }}>&gt; DECRYPTING_PORTFOLIO_DATA...</motion.div>
+                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 2.2 }} className="text-white">&gt; ACCESS_GRANTED</motion.div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Background3D />
       {/* Interactive Cursor Glow Layer */}
       <motion.div 
         className="pointer-events-none fixed inset-0 z-20"
@@ -170,33 +218,25 @@ export default function Home() {
       {/* Dynamic Ambient Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Deep background mesh/noise */}
-        {isDark ? (
-          <>
-            <div className="absolute inset-0 bg-[#050505]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:24px_24px] opacity-70" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]" />
-            {/* Top-down fade to hide grid at edges */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] opacity-90" />
-          </>
-        ) : (
-          <>
-            <div className="absolute inset-0 bg-zinc-50" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[length:24px_24px]" />
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-multiply" />
-            <div className="absolute inset-0 bg-gradient-to-b from-zinc-50 via-transparent to-zinc-50 opacity-80" />
-          </>
-        )}
+        <>
+          <div className="absolute inset-0 bg-black" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[length:24px_24px] opacity-70" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,255,65,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[size:48px_48px]" />
+          {/* Top-down fade to hide grid at edges */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-90" />
+        </>
 
         {/* Massive Ambient Glows */}
+  
         <motion.div
           animate={{ rotate: 360, scale: [1, 1.1, 1] }}
           transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className={`absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full blur-[120px] mix-blend-screen opacity-30 ${isDark ? 'bg-indigo-600/30' : 'bg-indigo-300/40'}`}
+          className="absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full blur-[120px] mix-blend-screen opacity-20 bg-[#00ff41]/20"
         />
         <motion.div
           animate={{ rotate: -360, scale: [1, 1.2, 1] }}
           transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-          className={`absolute top-[40%] -left-[20%] w-[70vw] h-[70vw] rounded-full blur-[140px] mix-blend-screen opacity-20 ${isDark ? 'bg-emerald-600/30' : 'bg-emerald-300/40'}`}
+          className="absolute top-[40%] -left-[20%] w-[70vw] h-[70vw] rounded-full blur-[140px] mix-blend-screen opacity-10 bg-[#008f11]/20"
         />
         <motion.div
           animate={{ x: [0, 50, 0], y: [0, -50, 0] }}
@@ -239,99 +279,98 @@ export default function Home() {
 
       <main className="relative z-10 max-w-6xl mx-auto px-6 sm:px-12 pt-48 pb-32 flex flex-col gap-32">
         
-        {/* Floating Skill Boxes Background */}
+        {/* Floating Matrix Blocks / Decrypted Strings */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          {/* Planets / Orbs */}
           <motion.div
-            animate={{ y: [0, -30, 0], rotate: 360, scale: [0.9, 1.1, 0.9] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-[10%] top-[15%] w-48 h-48 rounded-full blur-[8px] opacity-40 mix-blend-screen bg-gradient-to-tr from-indigo-500/60 via-purple-500/30 to-transparent shadow-[inset_0_0_60px_rgba(255,255,255,0.3)]"
+            animate={{ y: [0, -40, 0], x: [0, 20, 0] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute left-[10%] top-[20%] text-[#00ff41]/20 font-bold text-2xl rotate-90"
             style={{ transformStyle: "preserve-3d" }}
+          >
+            01100010 01101001
+          </motion.div>
+          <motion.div
+            animate={{ y: [-50, 50, -50], x: [0, -10, 0], rotate: [0, 180, 360] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            className="absolute right-[15%] top-[30%] w-32 h-32 border border-[#00ff41]/20 rounded-sm flex items-center justify-center mix-blend-screen"
+            style={{ transformStyle: "preserve-3d" }}
+          >
+            <span className="text-[#00ff41]/30">SYSOUT</span>
+          </motion.div>
+          <motion.div
+            animate={{ opacity: [0.1, 0.5, 0.1], scale: [1, 1.1, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            className="absolute right-[30%] bottom-[15%] text-[#00ff41]/30 font-mono tracking-[0.5em] text-sm"
+          >
+            A C C E S S _ G R A N T E D
+          </motion.div>
+          <motion.div
+            animate={{ y: [0, 60, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute left-[20%] top-[60%] flex flex-col gap-1 text-[#00ff41]/10 text-xs"
+          >
+            <span>{"{"}</span>
+            <span className="pl-4">"status": 200,</span>
+            <span className="pl-4">"auth": "OK"</span>
+            <span>{"}"}</span>
+          </motion.div>
+          <motion.div
+            animate={{ y: [100, -100], opacity: [0, 1, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear", delay: 3 }}
+            className="absolute left-[45%] bottom-[5%] w-[1px] h-32 bg-gradient-to-b from-transparent via-[#00ff41]/50 to-transparent"
           />
           <motion.div
-            animate={{ y: [0, 50, 0], x: [0, -30, 0], rotate: -360 }}
-            transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-            className="absolute left-[5%] top-[40%] w-72 h-72 rounded-full blur-[12px] opacity-30 mix-blend-screen bg-gradient-to-br from-emerald-500/40 via-teal-500/20 to-transparent shadow-[inset_0_0_80px_rgba(255,255,255,0.1)]"
-            style={{ transformStyle: "preserve-3d" }}
+            animate={{ x: [-100, 100], opacity: [0, 1, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: 2 }}
+            className="absolute left-[-5%] top-[75%] w-64 h-[1px] bg-gradient-to-r from-transparent via-[#00ff41]/40 to-transparent"
           />
           <motion.div
-            animate={{ y: [0, -60, 0], x: [0, 40, 0], scale: [1, 1.2, 1] }}
-            transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-[20%] bottom-[5%] w-40 h-40 rounded-full blur-[6px] opacity-40 mix-blend-screen bg-gradient-to-bl from-pink-500/50 via-rose-500/30 to-transparent shadow-[inset_0_0_50px_rgba(255,255,255,0.2)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
+            animate={{ scale: [0.8, 1], opacity: [0, 0.4, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "circIn", delay: 1 }}
+            className="absolute left-[70%] top-[10%] text-red-500/40 text-xs font-black"
+          >
+            [ERR_SEGFAULT]
+          </motion.div>
           <motion.div
-            animate={{ y: [0, -50, 0], x: [0, -30, 0], scale: [1, 1.3, 1] }}
-            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            className="absolute left-[25%] top-[10%] w-32 h-32 rounded-full blur-[5px] opacity-50 mix-blend-screen bg-gradient-to-tr from-yellow-500/50 via-orange-500/30 to-transparent shadow-[inset_0_0_30px_rgba(255,255,255,0.2)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
-          <motion.div
-            animate={{ y: [0, 80, 0], rotate: 360, x: [0, 40, 0] }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear", delay: 1 }}
-            className="absolute right-[5%] top-[60%] w-56 h-56 rounded-full blur-[10px] opacity-30 mix-blend-screen bg-gradient-to-tl from-cyan-500/50 via-blue-500/30 to-transparent shadow-[inset_0_0_70px_rgba(255,255,255,0.15)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
-          <motion.div
-            animate={{ y: [0, -50, 0], scale: [0.9, 1.1, 0.9], rotate: -180 }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-            className="absolute left-[45%] bottom-[15%] w-20 h-20 rounded-full blur-[1px] opacity-40 mix-blend-screen bg-gradient-to-br from-fuchsia-500/40 via-purple-500/20 to-transparent shadow-[inset_0_0_25px_rgba(255,255,255,0.2)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
-          <motion.div
-            animate={{ y: [0, 20, 0], x: [0, -50, 0] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-            className="absolute left-[-5%] top-[75%] w-72 h-72 rounded-full blur-[8px] opacity-20 mix-blend-screen bg-gradient-to-t from-zinc-500/20 via-slate-500/10 to-transparent shadow-[inset_0_0_80px_rgba(255,255,255,0.05)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
-          <motion.div
-            animate={{ y: [0, -60, 0], x: [0, 20, 0], scale: [0.8, 1.2, 0.8] }}
-            transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-            className="absolute left-[30%] top-[70%] w-36 h-36 rounded-full blur-[3px] opacity-30 mix-blend-screen bg-gradient-to-br from-green-500/30 via-emerald-500/20 to-transparent shadow-[inset_0_0_30px_rgba(255,255,255,0.1)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
-          <motion.div
-            animate={{ y: [0, 40, 0], x: [0, -40, 0], rotate: 180 }}
-            transition={{ duration: 16, repeat: Infinity, ease: "linear", delay: 6 }}
-            className="absolute right-[35%] top-[5%] w-28 h-28 rounded-full blur-[2px] opacity-40 mix-blend-screen bg-gradient-to-bl from-red-500/30 via-orange-500/20 to-transparent shadow-[inset_0_0_20px_rgba(255,255,255,0.15)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
-          <motion.div
-            animate={{ y: [0, -25, 0], rotate: 45 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 7 }}
-            className="absolute right-[-2%] bottom-[35%] w-56 h-56 rounded-full blur-[5px] opacity-20 mix-blend-screen bg-gradient-to-t from-indigo-500/30 via-blue-500/10 to-transparent shadow-[inset_0_0_50px_rgba(255,255,255,0.1)]"
-            style={{ transformStyle: "preserve-3d" }}
-          />
+            animate={{ y: [0, -100], opacity: [0, 0.5, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "linear", delay: 1.5 }}
+            className="absolute right-[5%] bottom-[40%] text-[#00ff41]/20 font-mono flex flex-col gap-0.5 text-[0.6rem]"
+          >
+            <span>0x00A1</span>
+            <span>0x00A2</span>
+            <span>0x00A3</span>
+            <span>0x00A4</span>
+            <span>0x00A5</span>
+          </motion.div>
 
-          {/* Skill Blocks - Slower & Elegantly Floating with Drag */}
+          {/* Skill Blocks - Hacker Terminals */}
           {[...technologies, "Machine Learning", "Data Science", "Web Dev", "Problem Solving", "APIs", "Git", "Figma", "Deep Learning", "Algorithms", "Leadership"].map((tech, i) => (
             <motion.div
               key={`float-${i}`}
               animate={{
                 y: [0, i % 2 === 0 ? -40 : -60, 0],
                 x: [0, i % 2 === 0 ? 30 : -30, 0],
-                rotate: [0, i % 2 === 0 ? 15 : -15, 0],
+                opacity: [0.3, 0.8, 0.3]
               }}
               drag
               dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
               dragElastic={0.2}
-              whileHover={{ scale: 1.1, zIndex: 50, opacity: 1 }}
+              whileHover={{ scale: 1.1, zIndex: 50, opacity: 1, backgroundColor: "rgba(0,255,65,0.2)" }}
               whileTap={{ cursor: "grabbing", scale: 0.95 }}
               transition={{
-                duration: 15 + (i % 10),
+                duration: 10 + (i % 5),
                 repeat: Infinity,
-                ease: "easeInOut",
-                delay: i * 0.5,
+                ease: "linear",
+                delay: i * 0.2,
               }}
-              className={`absolute cursor-grab active:cursor-grabbing px-4 sm:px-6 py-2 sm:py-3 rounded-2xl backdrop-blur-xl opacity-40 transition-colors duration-300 mix-blend-overlay border font-extrabold text-sm sm:text-lg shadow-2xl ${isDark ? 'bg-white/5 border-white/20 text-white hover:bg-indigo-500/20' : 'bg-black/5 border-black/20 text-black hover:bg-indigo-500/20'}`}
+              className="absolute cursor-grab active:cursor-grabbing px-4 sm:px-6 py-2 sm:py-3 rounded-sm backdrop-blur-sm opacity-40 transition-colors duration-300 border font-mono font-bold text-xs sm:text-sm shadow-2xl bg-black border-[#00ff41]/50 text-[#00ff41]"
               style={{
                 top: `${(i * 7) % 80}%`,
                 left: `${(i * 13) % 85}%`,
-                scale: 0.6 + (i % 4) * 0.15,
-                transformStyle: "preserve-3d",
+                scale: 0.7 + (i % 4) * 0.15,
               }}
             >
-              {tech}
+              <span className="text-[#008f11] mr-2">$</span>{tech}
             </motion.div>
           ))}
         </div>
@@ -341,46 +380,54 @@ export default function Home() {
           <motion.div 
             style={{ x: parallaxX, y: parallaxY }}
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, bounce: 0.4, type: "spring" }}
-            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-10 border backdrop-blur-md shadow-sm ${isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'}`}
+            className="inline-flex items-center gap-3 px-4 py-2 rounded-sm mb-10 border backdrop-blur-md shadow-sm bg-[#00ff41]/10 border-[#00ff41]/30 font-mono"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full bg-[#00ff41] opacity-75 rounded-sm"></span>
+              <span className="relative inline-flex h-3 w-3 bg-[#00ff41] rounded-sm"></span>
             </span>
-            <span className={`text-[11px] font-bold tracking-[0.2em] uppercase ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>Available for work</span>
+            <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#00ff41]">System Online_</span>
           </motion.div>
 
           <motion.h1 
             style={{ x: parallaxX, y: parallaxY, rotateX, rotateY, transformStyle: "preserve-3d" }}
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-6xl sm:text-7xl md:text-[6.5rem] font-black tracking-tighter mb-6 leading-[1.05]"
+            className="text-6xl sm:text-7xl md:text-[6.5rem] font-black tracking-tighter mb-6 leading-[1.05] uppercase"
           >
-            Rumita Mandal <br/>
-            <span className="text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient-x bg-[length:200%_auto] mt-4 block" style={{ transform: "translateZ(30px)" }}>
-              AI & Machine Learning Developer
+            <span className="relative inline-block group">
+              Rumita Mandal
+              <span className="absolute top-0 left-0 w-full h-full bg-[#00ff41] opacity-0 mix-blend-overlay group-hover:opacity-100 animate-pulse pointer-events-none"></span>
             </span>
+            <br/>
+            <motion.span 
+              animate={{ opacity: [1, 0.5, 1, 0.8, 1] }} 
+              transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+              className="text-3xl sm:text-4xl md:text-5xl text-[#00ff41]/80 mt-4 block font-mono" style={{ transform: "translateZ(30px)" }}
+            >
+              &gt; AI & Machine Learning Dev<span className="animate-pulse">_</span>
+            </motion.span>
           </motion.h1>
 
           <motion.p 
             style={{ x: useTransform(smoothMouseX, [0, windowSize.width], [-8, 8]), y: useTransform(smoothMouseY, [0, windowSize.height], [-8, 8]) }}
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-            className={`text-xl sm:text-2xl md:text-3xl ${textMuted} max-w-3xl mx-auto leading-relaxed mb-12 font-medium`}
+            className={`text-xl sm:text-2xl md:text-3xl ${textMuted} max-w-3xl mx-auto leading-relaxed mb-12 font-mono before:content-['//_'] before:text-[#00ff41]/40`}
           >
-            Crafting scalable software and blending engineering fundamentals with modern AI.
+            Crafting scalable architecture and bridging root mechanics with AI neural nets.
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
             className="flex flex-wrap items-center justify-center gap-5"
           >
-            <a href="https://github.com/rumita-mandal" target="_blank" className={`group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:shadow-[0_10px_40px_-10px_rgba(255,255,255,0.4)]' : 'bg-black text-white hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.4)]'}`}>
-              <Github className="w-5 h-5 transition-transform group-hover:rotate-12" /> Explore Work
+            <a href="https://github.com/rumita-mandal" target="_blank" className="group flex items-center gap-3 px-8 py-4 rounded-sm font-mono font-bold transition-all duration-300 hover:-translate-y-1 bg-[#00ff41] text-black hover:shadow-[0_0_20px_rgba(0,255,65,0.4)]">
+              <Github className="w-5 h-5 transition-transform group-hover:rotate-12" /> [INIT_REPO]
             </a>
-            <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" target="_blank" className={`flex items-center gap-3 p-4 rounded-full border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${isDark ? 'border-white/20 hover:bg-white/10 hover:border-white/40' : 'border-black/20 hover:bg-black/5 hover:border-black/40'}`}>
+            <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" target="_blank" className="flex items-center gap-3 p-4 rounded-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] border-[#00ff41]/30 hover:bg-[#00ff41]/10 text-[#00ff41]">
               <Linkedin className="w-5 h-5 text-current" />
             </a>
-            <a href="/cv%20of%20Rumita.doc" download className={`flex items-center gap-3 p-4 rounded-full border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${isDark ? 'border-white/20 hover:bg-white/10 hover:border-white/40 text-current' : 'border-black/20 hover:bg-black/5 hover:border-black/40 text-current'}`}>
-              <Download className="w-5 h-5" />
+            <a href="/cv%20of%20Rumita.doc" download className="flex items-center gap-3 p-4 rounded-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] border-[#00ff41]/30 hover:bg-[#00ff41]/10 text-[#00ff41]">
+              <Download className="w-5 h-5 text-current" />
             </a>
           </motion.div>
 
@@ -393,7 +440,7 @@ export default function Home() {
             <motion.div 
               animate={{ y: [0, 8, 0] }} 
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              className={`w-[1px] h-12 ${isDark ? 'bg-gradient-to-b from-white/40 to-transparent' : 'bg-gradient-to-b from-black/40 to-transparent'}`}
+              className="w-[1px] h-12 bg-gradient-to-b from-[#00ff41] to-transparent"
             />
           </motion.div>
         </section>
@@ -440,42 +487,48 @@ export default function Home() {
               dragConstraints={{ left: -20, right: 20, top: -20, bottom: 20 }}
               dragElastic={0.4}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={`relative cursor-grab active:cursor-grabbing w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-[3rem] p-2 border border-dashed ${isDark ? 'border-indigo-500/30' : 'border-indigo-500/30'}`}
+              className="relative cursor-grab active:cursor-grabbing w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-sm p-3 border border-dashed border-[#00ff41]/50 bg-black/50 backdrop-blur-md"
               style={{ transformStyle: "preserve-3d" }}
             >
-              <div className={`w-full h-full rounded-[2.5rem] overflow-hidden border-4 ${isDark ? 'border-[#050505]' : 'border-zinc-50'} relative`}>
+              <div className="absolute inset-0 border border-[#00ff41] rounded-sm blur-[2px] opacity-70 block hidden hover:block transition-all duration-300"/>
+              <div className="w-full h-full rounded-sm overflow-hidden border-2 border-[#00ff41]/80 relative bg-black">
+                {/* Simulated Terminal Overlay on image */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.1)_1px,transparent_1px)] bg-[size:100%_4px] z-10 pointer-events-none mix-blend-overlay"></div>
+                <div className="absolute inset-0 bg-[#00ff41]/10 z-10 pointer-events-none animate-pulse"></div>
                 <Image
                   src="/pic.jpeg"
                   alt="Rumita Mandal"
                   fill
                   priority
-                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  className="object-cover transition-transform duration-700 ease-out hover:scale-110 grayscale contrast-125 brightness-125 mix-blend-luminosity"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
-              <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-indigo-500/20 to-transparent pointer-events-none mix-blend-overlay"></div>
+              
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00ff41] rounded-none blur-3xl opacity-20 transition-opacity duration-500" />
+              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#00ff41] rounded-none blur-3xl opacity-10 transition-opacity duration-500" />
             </motion.div>
           </motion.div>
-
         </section>
 
         {/* MARQUEE SECTION */}
-        <div className="w-[100vw] relative left-1/2 -translate-x-1/2 -mt-20 mb-10 sm:-mt-10 sm:mb-20 overflow-hidden flex py-6 border-y border-current opacity-80 backdrop-blur-sm" style={{ borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', backgroundColor: isDark ? 'rgba(255,255,255,0.01)' : 'rgba(0,0,0,0.01)' }}>
+        <div className="w-[100vw] relative left-1/2 -translate-x-1/2 -mt-20 mb-10 sm:-mt-10 sm:mb-20 overflow-hidden flex py-6 border-y border-[#00ff41]/30 opacity-80 backdrop-blur-sm bg-black/40">
           <div className="flex w-max animate-marquee gap-8 sm:gap-16 items-center">
             {[...technologies, ...technologies, ...technologies, ...technologies].map((tech, i) => (
-              <span key={i} className={`whitespace-nowrap text-xl sm:text-2xl font-black uppercase tracking-widest ${isDark ? 'text-white/20 hover:text-white/80' : 'text-black/20 hover:text-black/80'} transition-colors cursor-default`}>
-                {tech}
+              <span key={i} className="whitespace-nowrap text-xl sm:text-2xl font-black uppercase tracking-[0.3em] font-mono text-[#00ff41]/30 hover:text-[#00ff41] transition-colors cursor-default">
+                /{tech}/
               </span>
             ))}
           </div>
         </div>
 
         {/* QUICK FACTS BENTO */}
-        <section className="scroll-mt-40 -mt-16 sm:mt-0">
+        <section className="scroll-mt-40 -mt-16 sm:mt-0 font-mono">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { icon: <MapPin className="w-6 h-6 text-blue-500" />, label: "Location", value: "India" },
-              { icon: <Briefcase className="w-6 h-6 text-purple-500" />, label: "Experience", value: "3+ Projects" },
-              { icon: <Calendar className="w-6 h-6 text-emerald-500" />, label: "Graduating", value: "2027" },
+              { icon: <MapPin className="w-6 h-6 text-[#00ff41]" />, label: "Location", value: "India" },
+              { icon: <Briefcase className="w-6 h-6 text-[#00ff41]" />, label: "Experience", value: "3+ Projects" },
+              { icon: <Calendar className="w-6 h-6 text-[#00ff41]" />, label: "Graduating", value: "2027" },
             ].map((fact, i) => (
               <motion.div
                 key={fact.label}
@@ -483,14 +536,14 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`flex items-center gap-4 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} shadow-sm backdrop-blur-md`}
+                className="flex items-center gap-4 p-6 sm:p-8 rounded-sm bg-black border border-[#00ff41]/30 shadow-[0_0_15px_rgba(0,255,65,0.05)] backdrop-blur-md group hover:border-[#00ff41]/80 hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] transition-all"
               >
-                <div className={`p-4 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'}`}>
+                <div className="p-4 rounded-sm border bg-[#00ff41]/5 border-[#00ff41]/20 group-hover:bg-[#00ff41]/10">
                   {fact.icon}
                 </div>
                 <div>
-                  <p className={`text-sm font-bold uppercase tracking-widest ${textMuted} mb-1`}>{fact.label}</p>
-                  <p className="text-xl font-black">{fact.value}</p>
+                  <p className="text-sm font-bold uppercase tracking-widest text-[#008f11] mb-1">{fact.label}</p>
+                  <p className="text-xl font-black text-[#00ff41]">{fact.value}</p>
                 </div>
               </motion.div>
             ))}
@@ -559,10 +612,10 @@ export default function Home() {
         </section>
 
         {/* DYNAMIC SKILLS */}
-        <section id="skills" className="scroll-mt-40">
+        <section id="skills" className="scroll-mt-40 font-mono">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} className="flex items-center gap-6 mb-16">
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Capabilities</h2>
-            <div className={`flex-1 h-[2px] ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-[#00ff41]">Capability_Matrix</h2>
+            <div className="flex-1 h-[1px] bg-gradient-to-r from-[#00ff41] to-transparent" />
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
@@ -574,32 +627,44 @@ export default function Home() {
                 viewport={{ once: false }}
                 whileHover={{ y: -8, scale: 1.02 }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className={`group relative p-8 sm:p-10 rounded-[2.5rem] ${cardBg} border ${cardBorder} ${group.border} overflow-hidden transition-all duration-500 shadow-lg hover:shadow-2xl`}
+                className="group relative p-8 sm:p-10 rounded-sm bg-black border border-[#00ff41]/30 overflow-hidden transition-all duration-500 shadow-[0_0_15px_rgba(0,255,65,0.05)] hover:shadow-[0_0_30px_rgba(0,255,65,0.15)] hover:border-[#00ff41]"
               >
-                <div className={`absolute top-0 right-0 w-72 h-72 bg-gradient-to-br ${group.grad} blur-[80px] opacity-40 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none delay-75`} />
+                <div className="absolute top-0 right-0 w-72 h-72 bg-[#00ff41]/5 blur-[80px] opacity-40 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none delay-75" />
                 
-                <div className={`mb-10 inline-flex p-5 rounded-2xl border backdrop-blur-md ${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-black/5 border-black/10 text-black'} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-md relative z-10`}>
+                <div className="mb-10 inline-flex p-5 rounded-sm border backdrop-blur-md bg-[#00ff41]/5 border-[#00ff41]/20 text-[#00ff41] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 relative z-10">
                   {group.icon}
                 </div>
                 
-                <h3 className="text-3xl font-black mb-8 relative z-10 tracking-tight">{group.title}</h3>
-                <div className="flex flex-wrap gap-3 relative z-10 sm:w-11/12">
-                  {group.items.map((item, i) => (
-                    <motion.span 
-                      key={item} 
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      whileHover={{ scale: 1.1, rotate: Math.random() > 0.5 ? 2 : -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      drag
-                      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                      dragElastic={0.2}
-                      transition={{ delay: 0.1 + (i * 0.05) }}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold border backdrop-blur-sm shadow-sm cursor-grab active:cursor-grabbing transition-colors ${isDark ? 'bg-black/40 border-white/10 text-neutral-200 hover:border-white/30 hover:bg-black/60' : 'bg-white/60 border-zinc-200 text-zinc-800 hover:border-zinc-400 hover:bg-white'}`}
-                    >
-                      {item}
-                    </motion.span>
-                  ))}
+                <h3 className="text-3xl font-black mb-8 relative z-10 tracking-tight text-[#00ff41] flex items-center gap-2">
+                  <span className="text-lg opacity-50">&gt;</span> {group.title}
+                </h3>
+                <div className="flex flex-col gap-4 relative z-10 sm:w-11/12">
+                  {group.items.map((item, i) => {
+                    // Use a deterministic value based on the item string to prevent hydration mismatch errors
+                    const percentage = 80 + ((item.length * 7 + i * 13) % 20);
+                    return (
+                        <motion.div 
+                        key={item} 
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 + (i * 0.05) }}
+                        className="flex flex-col gap-1 w-full group/bar mb-2"
+                      >
+                        <div className="flex justify-between text-xs font-bold text-[#008f11] group-hover/bar:text-[#00ff41]">
+                          <span>{item}</span>
+                          <span>{percentage}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-[#00ff41]/20 rounded-none overflow-hidden relative">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${percentage}%` }}
+                            transition={{ duration: 1, ease: "easeOut", delay: 0.2 + (i * 0.1) }}
+                            className="absolute top-0 left-0 h-full bg-[#00ff41]"
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </motion.div>
             ))}
