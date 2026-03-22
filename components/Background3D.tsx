@@ -92,7 +92,7 @@ export default function Background3D() {
         <DataNode radius={10} speed={0.05} size={0.4} color="#00ff00" offset={Math.PI / 1.5} yOffset={-2.5} />
 
         {/* Matrix starfield/particles */}
-        <Stars radius={100} depth={50} count={5000} factor={3} saturation={1} fade speed={2} color="#00ff00" />
+        <Stars radius={100} depth={50} count={5000} factor={3} saturation={1} fade speed={2} />
       </Canvas>
     </div>
   );
