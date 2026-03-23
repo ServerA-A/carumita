@@ -99,10 +99,15 @@ const projects = [
 
 const milestones = [
   { type: "edu", title: "Lovely Professional University", subtitle: "B.Tech in CSE (CGPA: 8.01)", date: "2023 - Present", icon: <GraduationCap className="w-5 h-5"/> },
-  { type: "cert", title: "Computation Theory & Finite Automata", subtitle: "Infosys", date: "Nov 2025", icon: <Award className="w-5 h-5"/> },
+  { type: "cert", title: "Computation Theory: Language Principle & Finite Automata", subtitle: "Infosys", date: "Nov 2025", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1zgvoaEwzOytpnvSaMqn5_8_q0ZTFEBRi/view?usp=drive_link" },
   { type: "achieve", title: "S1 List Position", subtitle: "Top academic performance among 40k+ students", date: "Nov 2025", icon: <Sparkles className="w-5 h-5"/> },
-  { type: "cert", title: "ChatGPT-4 Prompt Engineering", subtitle: "Infosys", date: "Aug 2025", icon: <Award className="w-5 h-5"/> },
-  { type: "cert", title: "C++ Programming & DSA", subtitle: "CSE Pathsala", date: "Jul 2025", icon: <Award className="w-5 h-5"/> },
+  { type: "achieve", title: "Hackathon Finalist", subtitle: "National level hackathon top 10 finish", date: "Oct 2025", icon: <Sparkles className="w-5 h-5"/> },
+  { type: "cert", title: "ChatGPT-4 Prompt Engineering", subtitle: "Infosys", date: "Aug 2025", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1zgvoaEwzOytpnvSaMqn5_8_q0ZTFEBRi/view?usp=drive_link" },
+  { type: "cert", title: "C++ Programming and Data Structures And Algorithm", subtitle: "CSE Pathsala", date: "Jul 2025", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1DusLx3ivijkd0xwVju7JyaLZxk49yQOE/view?usp=drive_link" },
+  { type: "cert", title: "Packet Switching Networks and Algorithms", subtitle: "University of Colorado", date: "Nov 2024", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1DusLx3ivijkd0xwVju7JyaLZxk49yQOE/view?usp=drive_link" },
+  { type: "cert", title: "Peer-to-Peer Protocols and Local Area Network", subtitle: "University of Colorado", date: "Nov 2024", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1e17RFF_OBBsRe7GFQBMl5TTqymAFK1-h/view?usp=drive_link" },
+  { type: "cert", title: "Fundamentals of Network Communication", subtitle: "University of Colorado", date: "Nov 2024", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1mZn772s5oOpqYmTe87x-Fmn8vPp-BMMc/view?usp=drive_link" },
+  { type: "cert", title: "The Bits and Bytes of Computer Networking", subtitle: "Google", date: "Nov 2024", icon: <Award className="w-5 h-5"/>, link: "https://drive.google.com/file/d/1gf42pxp8-MALniBUi6kEEgmsBXHEruQC/view?usp=drive_link" },
   { type: "edu", title: "City Montessori School", subtitle: "Intermediate (89%)", date: "2021 - 2023", icon: <GraduationCap className="w-5 h-5"/> },
 ];
 
@@ -160,13 +165,13 @@ export default function Home() {
   const rotateX = useTransform(smoothMouseY, [0, windowSize.height], [5, -5]);
   const rotateY = useTransform(smoothMouseX, [0, windowSize.width], [-5, 5]);
 
-  const isDark = true; // Forced dark/hacker mode
-  const bgMain = "bg-black";
-  const textMain = "text-[#00ff41]";
-  const textMuted = "text-[#008f11]";
-  const cardBg = "bg-black/40 border border-[#00ff41]/30 backdrop-blur-md";
-  const cardBorder = "border-[#00ff41]/30";
-  const cardHoverBg = "hover:bg-[#00ff41]/10 hover:border-[#00ff41]";
+  const isDark = theme === "dark";
+  const bgMain = isDark ? "bg-black" : "bg-gray-50";
+  const textMain = isDark ? "text-[#00ff41]" : "text-gray-900";
+  const textMuted = isDark ? "text-[#008f11]" : "text-gray-600";
+  const cardBg = isDark ? "bg-black/40 border border-[#00ff41]/30 backdrop-blur-md" : "bg-white border border-gray-200 shadow-sm";
+  const cardBorder = isDark ? "border-[#00ff41]/30" : "border-gray-200";
+  const cardHoverBg = isDark ? "hover:bg-[#00ff41]/10 hover:border-[#00ff41]" : "hover:bg-gray-50 hover:border-indigo-400 hover:shadow-md";
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ease-in-out ${bgMain} ${textMain} selection:bg-[#00ff41]/30 selection:text-white overflow-x-hidden font-mono relative`}>
@@ -218,6 +223,7 @@ export default function Home() {
       {/* Dynamic Ambient Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Deep background mesh/noise */}
+        {isDark ? (
         <>
           <div className="absolute inset-0 bg-black" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[length:24px_24px] opacity-70" />
@@ -225,6 +231,14 @@ export default function Home() {
           {/* Top-down fade to hide grid at edges */}
           <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-90" />
         </>
+        ) : (
+        <>
+          <div className="absolute inset-0 bg-gray-50" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[length:24px_24px] opacity-70" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[size:48px_48px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-transparent to-gray-50 opacity-90" />
+        </>
+        )}
 
         {/* Massive Ambient Glows */}
   
@@ -426,7 +440,7 @@ export default function Home() {
             <a href="https://www.linkedin.com/in/rumita-mandal-63a1a7293" target="_blank" className="flex items-center gap-3 p-4 rounded-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] border-[#00ff41]/30 hover:bg-[#00ff41]/10 text-[#00ff41]">
               <Linkedin className="w-5 h-5 text-current" />
             </a>
-            <a href="/cv%20of%20Rumita.doc" download className="flex items-center gap-3 p-4 rounded-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] border-[#00ff41]/30 hover:bg-[#00ff41]/10 text-[#00ff41]">
+            <a href="/cv.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,255,65,0.2)] border-[#00ff41]/30 hover:bg-[#00ff41]/10 text-[#00ff41]">
               <Download className="w-5 h-5 text-current" />
             </a>
           </motion.div>
@@ -733,17 +747,9 @@ export default function Home() {
           <div className="max-w-4xl space-y-6 relative">
             <div className={`absolute left-[38px] top-6 bottom-6 w-1 rounded-full ${isDark ? 'bg-gradient-to-b from-purple-500/50 via-pink-500/20 to-transparent' : 'bg-gradient-to-b from-purple-300 via-pink-200 to-transparent'} hidden sm:block`} />
             
-            {milestones.filter(m => m.type === 'cert').map((item, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, x: -50, rotateY: 15 }}
-                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-                viewport={{ once: false, margin: "-50px" }}
-                whileHover={{ scale: 1.02, rotateX: -2 }}
-                transition={{ duration: 0.6, type: "spring", bounce: 0.4, delay: idx * 0.1 }}
-                className={`relative flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} group cursor-default shadow-sm hover:shadow-2xl backdrop-blur-xl ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-white'} transition-all duration-500`}
-                style={{ transformStyle: "preserve-3d" }}
-              >
+            {milestones.filter(m => m.type === 'cert').map((item, idx) => {
+              const CardContent = (
+                <>
                 {/* 3D Glow Effect */}
                 <div className={`absolute inset-0 rounded-[2rem] bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
 
@@ -755,7 +761,10 @@ export default function Home() {
                 
                 <div className="flex-grow relative z-10 w-full">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-2">
-                    <h4 className={`text-xl sm:text-2xl font-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${isDark ? 'group-hover:from-purple-400 group-hover:to-pink-400' : 'group-hover:from-purple-600 group-hover:to-pink-600'} transition-all duration-300 tracking-tight leading-tight`}>{item.title}</h4>
+                    <h4 className={`text-xl sm:text-2xl font-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${isDark ? 'group-hover:from-purple-400 group-hover:to-pink-400' : 'group-hover:from-purple-600 group-hover:to-pink-600'} transition-all duration-300 tracking-tight leading-tight flex items-center gap-2`}>
+                      {item.title}
+                      {item.link && <ExternalLink className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 inline-block" />}
+                    </h4>
                     <div className={`sm:hidden inline-block px-3 py-1 rounded-full border ${isDark ? 'bg-white/5 border-white/10 text-purple-300' : 'bg-purple-50 border-purple-200 text-purple-700'} text-xs font-bold uppercase tracking-widest`}>
                       {item.date}
                     </div>
@@ -766,8 +775,27 @@ export default function Home() {
                 <div className={`hidden sm:block whitespace-nowrap px-5 py-2.5 rounded-xl border ${isDark ? 'bg-black/40 border-white/10 text-purple-300' : 'bg-white/80 border-purple-100 text-purple-700 shadow-sm'} text-xs font-black uppercase tracking-widest backdrop-blur-md group-hover:border-purple-500/30 transition-colors`}>
                   {item.date}
                 </div>
-              </motion.div>
-            ))}
+                </>
+              );
+
+              return (
+                <motion.a 
+                  key={idx}
+                  href={item.link || "#"}
+                  target={item.link ? "_blank" : undefined}
+                  rel={item.link ? "noopener noreferrer" : undefined}
+                  initial={{ opacity: 0, x: -50, rotateY: 15 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                  viewport={{ once: false, margin: "-50px" }}
+                  whileHover={{ scale: 1.02, rotateX: -2 }}
+                  transition={{ duration: 0.6, type: "spring", bounce: 0.4, delay: idx * 0.1 }}
+                  className={`block relative flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 p-6 sm:p-8 rounded-[2rem] ${cardBg} border ${cardBorder} ${cardHoverBg} group cursor-pointer shadow-sm hover:shadow-2xl backdrop-blur-xl ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-white'} transition-all duration-500`}
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {CardContent}
+                </motion.a>
+              );
+            })}
           </div>
         </section>
 
